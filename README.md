@@ -10,7 +10,7 @@ the basic framework to manage C/C++ projects.
 
 Artemis is fully integrated with Eclipse and you don't need other dependency to use it.
 
-Here a list of all addition checks perfomed by Artemis in real-time.
+Here a list of all additional checks perfomed by Artemis in real-time.
 
 * Virtual method call in constructor/destructor
 * Throw exception in destructor
