@@ -58,6 +58,23 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Memory compare with composite types
 * Wrong use of c_str
 * Miss brace in control statements
+* Break in for loop
+* Sizeof without parentheis
+* Miss init static variables class members
+* Avoid use global variables
+* Avoid inline costructor and destructor
+* Avoid virtual functions inline
+* Avoid virtual functions without virtual keyword
+* Avoid overload&& overload|| overload,
+* Abstract classes should be non-copyable
+* Define at least one constructor for each class
+* Avoid classes with multiple inheritance
+* Avoid Classes with a copy Constructor and the default Destructor or assignment operator
+* Avoid Classes with an assignment operator and the default Destructor or copy constructor
+* Each constructor must call all base classes constructors
+* Don't modify for loop counter in for loop body
+* Avoid using structures
+* Avoid to define functions with parameters passed by value
 
 ## Configuration
 
