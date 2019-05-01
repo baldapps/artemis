@@ -56,6 +56,16 @@
                messagePattern="%problem.messagePattern.GlobalsInCtorProblem"
                name="%problem.name.GlobalsInCtorProblem">
          </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.CallSuperCtorProblem"
+               id="com.baldapps.artemis.checkers.CallSuperCtorProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.CallSuperCtorProblem"
+               name="%problem.name.CallSuperCtorProblem">
+         </problem>
       </checker>
       <checker
             class="com.baldapps.artemis.checkers.MagicNumberChecker"
@@ -149,6 +159,26 @@
                markerType="org.eclipse.cdt.codan.core.codanProblem"
                messagePattern="%problem.messagePattern.MultipleDeclarationsProblem"
                name="%problem.name.MultipleDeclarationsProblem">
+         </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.StaticMissedInitializationProblem"
+               id="com.baldapps.artemis.checkers.StaticMissedInitializationProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.StaticMissedInitializationProblem"
+               name="%problem.name.StaticMissedInitializationProblem">
+         </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.AvoidGlobalVarsProblem"
+               id="com.baldapps.artemis.checkers.AvoidGlobalVarsProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.AvoidGlobalVarsProblem"
+               name="%problem.name.AvoidGlobalVarsProblem">
          </problem>
       </checker>
       <checker
@@ -468,6 +498,16 @@
                messagePattern="%problem.messagePattern.SizeofVoidProblem"
                name="%problem.name.SizeofVoidProblem">
          </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.SizeofNoParenProblem"
+               id="com.baldapps.artemis.checkers.SizeofNoParenProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.SizeofNoParenProblem"
+               name="%problem.name.SizeofNoParenProblem">
+         </problem>
       </checker>
       <checker
             class="com.baldapps.artemis.checkers.TrigraphsChecker"
@@ -527,6 +567,26 @@
                markerType="org.eclipse.cdt.codan.core.codanProblem"
                messagePattern="%problem.messagePattern.FloatCounterProblem"
                name="%problem.name.FloatCounterProblem">
+         </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.BreakInLoopProblem"
+               id="com.baldapps.artemis.checkers.BreakInLoopProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.BreakInLoopProblem"
+               name="%problem.name.BreakInLoopProblem">
+         </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.CounterModificationProblem"
+               id="com.baldapps.artemis.checkers.CounterModificationProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.CounterModificationProblem"
+               name="%problem.name.CounterModificationProblem">
          </problem>
       </checker>
       <checker
@@ -602,6 +662,131 @@
                markerType="org.eclipse.cdt.codan.core.codanProblem"
                messagePattern="%problem.messagePattern.MissBraceProblem"
                name="%problem.name.MissBraceProblem">
+         </problem>
+      </checker>
+      <checker
+            class="com.baldapps.artemis.checkers.MemberClassesChecker"
+            id="com.baldapps.artemis.checkers.MemberClassesChecker"
+            name="%checker.name.MemberClassesChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.CtorDtorInlineProblem"
+               id="com.baldapps.artemis.checkers.CtorDtorInlineProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.CtorDtorInlineProblem"
+               name="%problem.name.CtorDtorInlineProblem">
+         </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.VirtualInlineProblem"
+               id="com.baldapps.artemis.checkers.VirtualInlineProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.VirtualInlineProblem"
+               name="%problem.name.VirtualInlineProblem">
+         </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.ImplicitVirtualProblem"
+               id="com.baldapps.artemis.checkers.ImplicitVirtualProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.ImplicitVirtualProblem"
+               name="%problem.name.ImplicitVirtualProblem">
+         </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.AvoidOverloadsProblem"
+               id="com.baldapps.artemis.checkers.AvoidOverloadsProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.AvoidOverloadsProblem"
+               name="%problem.name.AvoidOverloadsProblem">
+         </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.UserCtorProblem"
+               id="com.baldapps.artemis.checkers.UserCtorProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.UserCtorProblem"
+               name="%problem.name.UserCtorProblem">
+         </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.AbstractNoCopyProblem"
+               id="com.baldapps.artemis.checkers.AbstractNoCopyProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.AbstractNoCopyProblem"
+               name="%problem.name.AbstractNoCopyProblem">
+         </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.AvoidMultipleInheritanceProblem"
+               id="com.baldapps.artemis.checkers.AvoidMultipleInheritanceProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.AvoidMultipleInheritanceProblem"
+               name="%problem.name.AvoidMultipleInheritanceProblem">
+         </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.CopyCtorOnlyProblem"
+               id="com.baldapps.artemis.checkers.CopyCtorOnlyProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.CopyCtorOnlyProblem"
+               name="%problem.name.CopyCtorOnlyProblem">
+         </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.AssignOpOnlyProblem"
+               id="com.baldapps.artemis.checkers.AssignOpOnlyProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.AssignOpOnlyProblem"
+               name="%problem.name.AssignOpOnlyProblem">
+         </problem>
+      </checker>
+      <checker
+            class="com.baldapps.artemis.checkers.StructsChecker"
+            id="com.baldapps.artemis.checkers.StructsChecker"
+            name="%checker.name.StructsChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.AvoidStructsProblem"
+               id="com.baldapps.artemis.checkers.AvoidStructsProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.AvoidStructsProblem"
+               name="%problem.name.AvoidStructsProblem">
+         </problem>
+      </checker>
+      <checker
+            class="com.baldapps.artemis.checkers.FunctionChecker"
+            id="com.baldapps.artemis.checkers.FunctionChecker"
+            name="%checker.name.StructsChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.ParByCopyProblem"
+               id="com.baldapps.artemis.checkers.ParByCopyProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.ParByCopyProblem"
+               name="%problem.name.ParByCopyProblem">
          </problem>
       </checker>
    </extension>

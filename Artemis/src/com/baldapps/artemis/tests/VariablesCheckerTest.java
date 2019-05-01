@@ -20,11 +20,14 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 	public static final String STATIC_ID = VariablesChecker.STATIC_VAR_ID;
 	public static final String MULTI_ID = VariablesChecker.VAR_MULTI_DEC_ID;
 	public static final String MISS_INIT_ID = VariablesChecker.VAR_MISS_INIT_ID;
+	public static final String STATIC_MISS_INIT_ID = VariablesChecker.STATIC_VAR_MISS_INIT_ID;
+	public static final String GLOBAL_ID = VariablesChecker.AVOID_GLOBALS_ID;
+	private boolean isHeader = true;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		enableProblems(STATIC_ID, MULTI_ID, MISS_INIT_ID);
+		enableProblems(STATIC_ID, MULTI_ID, MISS_INIT_ID, STATIC_MISS_INIT_ID, GLOBAL_ID);
 	}
 
 	@Override
@@ -34,7 +37,7 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 
 	@Override
 	public boolean isHeader() {
-		return true;
+		return isHeader;
 	}
 
 	//static int a = 0;
@@ -175,5 +178,28 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 		checkNoErrorsOfKind(MISS_INIT_ID);
 		checkNoErrorsOfKind(MULTI_ID);
 		checkNoErrorsOfKind(STATIC_ID);
+	}
+
+	//class Test {
+	//private:
+	//	static int s;
+	//}
+	//int Test::s;
+	public void testStaticVariable() throws Exception {
+		isHeader = false;
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(MISS_INIT_ID);
+		checkNoErrorsOfKind(MULTI_ID);
+		checkNoErrorsOfKind(STATIC_ID);
+		checkErrorLine(5, STATIC_MISS_INIT_ID);
+	}
+
+	//int a = 0;
+	public void testGlobalVariable() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(MISS_INIT_ID);
+		checkNoErrorsOfKind(MULTI_ID);
+		checkNoErrorsOfKind(STATIC_ID);
+		checkErrorLine(1, GLOBAL_ID);
 	}
 }

@@ -300,6 +300,10 @@ You may add additional accurate notices of copyright ownership.
       <update label="Artemis" url="https://baldapps.altervista.org/artemis"/>
    </url>
 
+   <requires>
+      <import feature="org.eclipse.cdt" version="9.7.1.qualifier" match="greaterOrEqual"/>
+   </requires>
+
    <plugin
          id="Artemis"
          download-size="0"

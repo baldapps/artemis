@@ -49,7 +49,8 @@ public class SwitchCaseChecker extends AbstractIndexAstChecker {
 	public void initPreferences(IProblemWorkingCopy problem) {
 		super.initPreferences(problem);
 		if (problem.getId().equals(MISS_DEFAULT_ID))
-			addPreference(problem, PARAM_DEFAULT_ALL_ENUMS, CheckersMessages.SwitchCaseChecker_ParameterDefaultAllEnums, Boolean.FALSE);
+			addPreference(problem, PARAM_DEFAULT_ALL_ENUMS, CheckersMessages.SwitchCaseChecker_ParameterDefaultAllEnums,
+					Boolean.FALSE);
 	}
 
 	@Override
@@ -105,6 +106,7 @@ public class SwitchCaseChecker extends AbstractIndexAstChecker {
 						if (isEnumSwitch && enumValues.size() != 0) {
 							//switch not complete
 							reportProblem(MISS_CASE_ID, statement);
+							reportProblem(MISS_DEFAULT_ID, statement);
 						} else if (isEnumSwitch && enumValues.size() == 0) {
 							//switch complete but lack of default label
 							if (defaultWithAllEnums)

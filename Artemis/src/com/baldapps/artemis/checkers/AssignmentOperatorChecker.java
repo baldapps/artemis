@@ -20,7 +20,6 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
-import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPointerOperator;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -91,10 +90,12 @@ public class AssignmentOperatorChecker extends AbstractIndexAstChecker {
 				IASTBinaryExpression binary = (IASTBinaryExpression) expression;
 				if ((binary.getOperator() == IASTBinaryExpression.op_equals
 						|| binary.getOperator() == IASTBinaryExpression.op_notequals)) {
-					if (referencesThis(binary.getOperand1()) && referencesParameter(binary.getOperand2())) {
+					if (SemanticUtils.referencesThis(binary.getOperand1())
+							&& referencesParameter(binary.getOperand2())) {
 						decl = null;
 						return PROCESS_SKIP;
-					} else if (referencesThis(binary.getOperand2()) && referencesParameter(binary.getOperand1())) {
+					} else if (SemanticUtils.referencesThis(binary.getOperand2())
+							&& referencesParameter(binary.getOperand1())) {
 						decl = null;
 						return PROCESS_SKIP;
 					} else {
@@ -128,27 +129,6 @@ public class AssignmentOperatorChecker extends AbstractIndexAstChecker {
 				case IASTUnaryExpression.op_star:
 				case IASTUnaryExpression.op_bracketedPrimary:
 					return referencesParameter(unExpr.getOperand());
-				}
-			}
-			return false;
-		}
-
-		/**
-		 * Checks whether expression references this (directly, by pointer or by reference)
-		 */
-		public boolean referencesThis(IASTNode expr) {
-			if (expr instanceof IASTLiteralExpression) {
-				IASTLiteralExpression litArg = (IASTLiteralExpression) expr;
-				if (litArg.getKind() == IASTLiteralExpression.lk_this) {
-					return true;
-				}
-			} else if (expr instanceof ICPPASTUnaryExpression) {
-				ICPPASTUnaryExpression unExpr = (ICPPASTUnaryExpression) expr;
-				switch (unExpr.getOperator()) {
-				case IASTUnaryExpression.op_amper:
-				case IASTUnaryExpression.op_star:
-				case IASTUnaryExpression.op_bracketedPrimary:
-					return referencesThis(unExpr.getOperand());
 				}
 			}
 			return false;

@@ -36,6 +36,8 @@ public class VariablesChecker extends AbstractIndexAstChecker {
 	public static final String STATIC_VAR_ID = "com.baldapps.artemis.checkers.StaticVariableProblem"; //$NON-NLS-1$
 	public static final String VAR_MULTI_DEC_ID = "com.baldapps.artemis.checkers.MultipleDeclarationsProblem"; //$NON-NLS-1$
 	public static final String VAR_MISS_INIT_ID = "com.baldapps.artemis.checkers.MissedInitializationProblem"; //$NON-NLS-1$
+	public static final String STATIC_VAR_MISS_INIT_ID = "com.baldapps.artemis.checkers.StaticMissedInitializationProblem"; //$NON-NLS-1$
+	public static final String AVOID_GLOBALS_ID = "com.baldapps.artemis.checkers.AvoidGlobalVarsProblem"; //$NON-NLS-1$
 
 	@Override
 	public void processAst(IASTTranslationUnit ast) {
@@ -81,13 +83,28 @@ public class VariablesChecker extends AbstractIndexAstChecker {
 							reportProblem(VAR_MULTI_DEC_ID, declaration);
 						for (IASTDeclarator d : decls) {
 							IBinding binding = d.getName().resolveBinding();
-							if (binding == null || !(binding instanceof IVariable) || binding instanceof IField
-									|| binding instanceof ICPPParameter)
+							if (binding == null || !(binding instanceof IVariable) || binding instanceof ICPPParameter)
 								continue;
+							EScopeKind scopeKind = EScopeKind.eLocal;
+							String errorId = VAR_MISS_INIT_ID;
+							if (binding instanceof IField) {
+								//special case: static field variables declared outside classes
+								if (!((IField) binding).isStatic())
+									continue;
+								scopeKind = EScopeKind.eClassType;
+								errorId = STATIC_VAR_MISS_INIT_ID;
+							}
 							try {
 								IScope scope = binding.getScope();
-								if (scope == null || scope.getKind() != EScopeKind.eLocal)
+								if (scope == null) {
 									continue;
+								}
+								if (scope.getKind() == EScopeKind.eGlobal || scope.getKind() == EScopeKind.eNamespace) {
+									reportProblem(AVOID_GLOBALS_ID, declaration, d.getName());
+								}
+								if (scope.getKind() != scopeKind) {
+									continue;
+								}
 							} catch (DOMException e) {
 								CodanCheckersActivator.log(e);
 								continue;
@@ -106,10 +123,10 @@ public class VariablesChecker extends AbstractIndexAstChecker {
 										}
 									}
 									if (!found)
-										reportProblem(VAR_MISS_INIT_ID, declaration, d.getName());
+										reportProblem(errorId, declaration, d.getName());
 								}
 							} else if (d.getInitializer() == null)
-								reportProblem(VAR_MISS_INIT_ID, declaration, d.getName());
+								reportProblem(errorId, declaration, d.getName());
 						}
 					}
 				}

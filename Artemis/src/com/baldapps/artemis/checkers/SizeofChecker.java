@@ -33,12 +33,14 @@ import org.eclipse.cdt.core.dom.ast.IType;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.index.IIndexBinding;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil;
+import org.eclipse.cdt.internal.core.model.ASTStringUtil;
 
 @SuppressWarnings("restriction")
 public class SizeofChecker extends AbstractIndexAstChecker {
 	public static final String SIZEOF_ARRAY_ID = "com.baldapps.artemis.checkers.SizeofArrayProblem"; //$NON-NLS-1$
 	public static final String SIZEOF_NESTED_ID = "com.baldapps.artemis.checkers.SizeofNestedProblem"; //$NON-NLS-1$
 	public static final String SIZEOF_VOID_ID = "com.baldapps.artemis.checkers.SizeofVoidProblem"; //$NON-NLS-1$
+	public static final String SIZEOF_NO_PAREN_ID = "com.baldapps.artemis.checkers.SizeofNoParenProblem"; //$NON-NLS-1$
 
 	@Override
 	public void processAst(IASTTranslationUnit ast) {
@@ -97,6 +99,11 @@ public class SizeofChecker extends AbstractIndexAstChecker {
 			public int visit(IASTExpression expression) {
 				if (expression instanceof IASTUnaryExpression
 						&& ((IASTUnaryExpression) expression).getOperator() == IASTUnaryExpression.op_sizeof) {
+					IASTExpression subExpr = ((IASTUnaryExpression) expression).getOperand();
+					if (!(subExpr instanceof IASTUnaryExpression) || ((IASTUnaryExpression) subExpr)
+							.getOperator() != IASTUnaryExpression.op_bracketedPrimary) {
+						reportProblem(SIZEOF_NO_PAREN_ID, expression);
+					}
 					IASTExpression operand = unwrapUnaryExpression((IASTUnaryExpression) expression);
 					if (operand == null)
 						return PROCESS_SKIP;
@@ -104,7 +111,6 @@ public class SizeofChecker extends AbstractIndexAstChecker {
 						return PROCESS_SKIP;
 					if (isVoid(operand.getExpressionType())) {
 						reportProblem(SIZEOF_VOID_ID, expression);
-						return PROCESS_SKIP;
 					}
 					IASTName sizeofParName = ((IASTIdExpression) operand).getName();
 					IBinding sizeofParNameBinding = sizeofParName.resolveBinding();
@@ -122,7 +128,7 @@ public class SizeofChecker extends AbstractIndexAstChecker {
 							IBinding parNameBinding = parDecl.getName().resolveBinding();
 							if (areEquivalentBindings(parNameBinding, sizeofParNameBinding,
 									sizeofParName.getTranslationUnit().getIndex())) {
-								reportProblem(SIZEOF_ARRAY_ID, expression, new String(sizeofParName.getSimpleID()));
+								reportProblem(SIZEOF_ARRAY_ID, expression, ASTStringUtil.getSimpleName(sizeofParName));
 							}
 						}
 					}

@@ -18,11 +18,13 @@ import com.baldapps.artemis.checkers.ForLoopChecker;
 public class ForLoopCheckerTest extends ArtemisCheckerTestCase {
 
 	public static final String ERR_ID = ForLoopChecker.FLOAT_COUNTER_ID;
+	public static final String ERR_BREAK_ID = ForLoopChecker.BREAK_IN_LOOP_ID;
+	public static final String CNT_MODIFICATION_ID = ForLoopChecker.CNT_MODIFICATION_ID;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		enableProblems(ERR_ID);
+		enableProblems(ERR_ID, ERR_BREAK_ID, CNT_MODIFICATION_ID);
 	}
 
 	@Override
@@ -34,7 +36,7 @@ public class ForLoopCheckerTest extends ArtemisCheckerTestCase {
 	//	for (float f = 0; f < 4.3; f++) {
 	//	}
 	//}
-	public void testAddToStd() throws Exception {
+	public void testForWithFloat() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLine(2, ERR_ID);
 	}
@@ -43,8 +45,61 @@ public class ForLoopCheckerTest extends ArtemisCheckerTestCase {
 	//	for (int f = 0; f < 4; f++) {
 	//	}
 	//}
-	public void testAddToOther() throws Exception {
+	public void testForWithoutFloat() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(ERR_ID);
+	}
+
+	//void foo() {
+	//	for (int f = 0; f < 4; f++) {
+	//		break;
+	//	}
+	//}
+	public void testForBreak() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(3, ERR_BREAK_ID);
+	}
+
+	//void foo() {
+	//	for (int f = 0; f < 4; f++) {
+	//		f++;
+	//	}
+	//}
+	public void testCounterMod1() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(3, CNT_MODIFICATION_ID);
+	}
+
+	//void foo() {
+	//	for (int f = 0; f < 4; f++) {
+	//		f += 8;
+	//	}
+	//}
+	public void testCounterMod2() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(3, CNT_MODIFICATION_ID);
+	}
+
+	//void foo() {
+	//	int array[4];
+	//	for (int f = 0; f < 4; f++) {
+	//		int a = array[f];
+	//	}
+	//}
+	public void testCounterMod3() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(CNT_MODIFICATION_ID);
+	}
+
+	//void mod(int f) {};
+	//void foo() {
+	//	int array[4];
+	//	for (int f = 0; f < 4; f++) {
+	//		mod(f);
+	//	}
+	//}
+	public void testCounterMod4() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(CNT_MODIFICATION_ID);
 	}
 }

@@ -22,10 +22,10 @@ import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBasicType;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IType;
-import org.eclipse.cdt.core.index.IIndex;
-import org.eclipse.cdt.core.index.IIndexBinding;
 import org.eclipse.cdt.internal.core.dom.parser.ValueFactory;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil;
+
+import com.baldapps.artemis.utils.SemanticUtils;
 
 @SuppressWarnings("restriction")
 public class FloatCompareChecker extends AbstractIndexAstChecker {
@@ -38,31 +38,11 @@ public class FloatCompareChecker extends AbstractIndexAstChecker {
 				shouldVisitExpressions = true;
 			}
 
-			private boolean areEquivalentBindings(IBinding binding1, IBinding binding2, IIndex index) {
-				if (binding1.equals(binding2)) {
-					return true;
-				}
-				if ((binding1 instanceof IIndexBinding) != (binding2 instanceof IIndexBinding) && index != null) {
-					if (binding1 instanceof IIndexBinding) {
-						binding2 = index.adaptBinding(binding2);
-					} else {
-						binding1 = index.adaptBinding(binding1);
-					}
-					if (binding1 == null || binding2 == null) {
-						return false;
-					}
-					if (binding1.equals(binding2)) {
-						return true;
-					}
-				}
-				return false;
-			}
-
 			private boolean equals(IASTExpression expr1, IASTExpression expr2) {
 				if (expr1 instanceof IASTIdExpression && expr2 instanceof IASTIdExpression) {
 					IBinding leftLeftBinding = ((IASTIdExpression) expr1).getName().resolveBinding();
 					IBinding rightLeftBinding = ((IASTIdExpression) expr2).getName().resolveBinding();
-					if (areEquivalentBindings(leftLeftBinding, rightLeftBinding,
+					if (SemanticUtils.areEquivalentBindings(leftLeftBinding, rightLeftBinding,
 							expr1.getTranslationUnit().getIndex())) {
 						return true;
 					}
@@ -74,7 +54,7 @@ public class FloatCompareChecker extends AbstractIndexAstChecker {
 				} else if (expr1 instanceof IASTFieldReference && expr2 instanceof IASTFieldReference) {
 					IBinding leftLeftBinding = ((IASTFieldReference) expr1).getFieldName().resolveBinding();
 					IBinding rightLeftBinding = ((IASTFieldReference) expr2).getFieldName().resolveBinding();
-					if (areEquivalentBindings(leftLeftBinding, rightLeftBinding,
+					if (SemanticUtils.areEquivalentBindings(leftLeftBinding, rightLeftBinding,
 							expr1.getTranslationUnit().getIndex())) {
 						return true;
 					}

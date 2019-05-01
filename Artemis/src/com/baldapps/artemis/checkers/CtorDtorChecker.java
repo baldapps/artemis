@@ -19,6 +19,7 @@ import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.EScopeKind;
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
+import org.eclipse.cdt.core.dom.ast.IASTFieldReference;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
@@ -31,21 +32,25 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCatchHandler;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTConstructorChainInitializer;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTryBlockStatement;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPBase;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPConstructor;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMethod;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPVariable;
 import org.eclipse.cdt.core.dom.ast.cpp.SemanticQueries;
 import org.eclipse.cdt.internal.core.dom.parser.ASTQueries;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.ClassTypeHelper;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.ICPPDeferredClassInstance;
 import org.eclipse.cdt.internal.core.model.ASTStringUtil;
 
+import com.baldapps.artemis.utils.SemanticUtils;
 
 @SuppressWarnings("restriction")
 public class CtorDtorChecker extends AbstractIndexAstChecker {
 	public static final String VIRTUAL_CALL_ID = "com.baldapps.artemis.checkers.VirtualMethodCallProblem"; //$NON-NLS-1$
 	public static final String THROW_ID = "com.baldapps.artemis.checkers.ThrowInDestructorProblem"; //$NON-NLS-1$
 	public static final String GLOBALS_ID = "com.baldapps.artemis.checkers.GlobalsInCtorProblem"; //$NON-NLS-1$
+	public static final String CALL_SUPER_CTOR_ID = "com.baldapps.artemis.checkers.CallSuperCtorProblem"; //$NON-NLS-1$
 
 	@Override
 	public void processAst(IASTTranslationUnit ast) {
@@ -70,6 +75,10 @@ public class CtorDtorChecker extends AbstractIndexAstChecker {
 		public int visit(IASTDeclaration declaration) {
 			ICPPConstructor constructor = getConstructor(declaration);
 			if (constructor != null) {
+				ICPPBase[] bases = constructor.getClassOwner().getBases();
+				ICPPASTFunctionDefinition functionDefinition = (ICPPASTFunctionDefinition) declaration;
+				if (functionDefinition.getMemberInitializers().length < bases.length)
+					reportProblem(CALL_SUPER_CTOR_ID, declaration);
 				ctorDtorStack.push(DECL_TYPE.CTOR);
 			} else {
 				ICPPMethod destructor = getDestructor(declaration);
@@ -98,10 +107,14 @@ public class CtorDtorChecker extends AbstractIndexAstChecker {
 					if (fNameExp instanceof IASTIdExpression) {
 						IASTIdExpression fName = (IASTIdExpression) fNameExp;
 						fBinding = fName.getName().resolveBinding();
+					} else if (fNameExp instanceof IASTFieldReference) {
+						IASTFieldReference fName = (IASTFieldReference) fNameExp;
+						if (SemanticUtils.referencesThis(fName.getFieldOwner()))
+							fBinding = fName.getFieldName().resolveBinding();
 					}
 					if (fBinding != null && fBinding instanceof ICPPMethod) {
 						ICPPMethod method = (ICPPMethod) fBinding;
-						if (method.isVirtual() || method.isPureVirtual()) {
+						if (method.isPureVirtual() || ClassTypeHelper.isVirtual(method)) {
 							reportProblem(VIRTUAL_CALL_ID, expression);
 						}
 					}
@@ -149,7 +162,7 @@ public class CtorDtorChecker extends AbstractIndexAstChecker {
 			}
 			return PROCESS_CONTINUE;
 		}
-			
+
 		/**
 		 * Checks that specified declaration is a class constructor
 		 * (it is a class member and its name is equal to the class name)

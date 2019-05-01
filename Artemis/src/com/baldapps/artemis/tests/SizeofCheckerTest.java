@@ -20,11 +20,12 @@ public class SizeofCheckerTest extends ArtemisCheckerTestCase {
 	public static final String SIZEOF_ARRAY_ID = SizeofChecker.SIZEOF_ARRAY_ID;
 	public static final String SIZEOF_NESTED_ID = SizeofChecker.SIZEOF_NESTED_ID;
 	public static final String SIZEOF_VOID_ID = SizeofChecker.SIZEOF_VOID_ID;
+	public static final String SIZEOF_NO_PAREN_ID = SizeofChecker.SIZEOF_NO_PAREN_ID;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		enableProblems(SIZEOF_ARRAY_ID, SIZEOF_NESTED_ID, SIZEOF_VOID_ID);
+		enableProblems(SIZEOF_ARRAY_ID, SIZEOF_NESTED_ID, SIZEOF_VOID_ID, SIZEOF_NO_PAREN_ID);
 	}
 
 	@Override
@@ -70,5 +71,14 @@ public class SizeofCheckerTest extends ArtemisCheckerTestCase {
 	public void testSizeofVoid() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLine(2, SIZEOF_VOID_ID);
+	}
+
+	//int foo() {
+	//	int a = 0;
+	//	sizeof a;
+	//}
+	public void testSizeofNoParen() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(3, SIZEOF_NO_PAREN_ID);
 	}
 }
