@@ -59,7 +59,7 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Wrong use of c_str
 * Miss brace in control statements
 * Break in for loop
-* Sizeof without parentheis
+* Sizeof without parenthesis
 * Miss init static variables class members
 * Avoid use global variables
 * Avoid inline costructor and destructor
@@ -75,6 +75,7 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Don't modify for loop counter in for loop body
 * Avoid using structures
 * Avoid to define functions with parameters passed by value
+* Avoid hiding fields
 
 ## Configuration
 

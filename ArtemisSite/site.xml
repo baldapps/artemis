@@ -3,5 +3,7 @@
    <description name="Artemis update site" url="https://baldapps.altervista.org/artemis">
       
    </description>
+   <feature url="features/ArtemisFeature_1.0.0.qualifier.jar" id="ArtemisFeature" version="1.1.0.qualifier"/>
    <feature url="features/ArtemisFeature_1.1.0.qualifier.jar" id="ArtemisFeature" version="1.1.0.qualifier"/>
+   <feature url="features/ArtemisFeature_1.2.0.qualifier.jar" id="ArtemisFeature" version="1.2.0.qualifier"/>
 </site>

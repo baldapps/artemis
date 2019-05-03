@@ -18,6 +18,13 @@ public class QuickFixMessages extends NLS {
 	public static String QuickFixPointerToZero_add_assignment_to_nullptr;
 	public static String QuickFixAddDefaultSwitch_add_default_to_switch;
 	public static String QuickFixAddCaseSwitch_add_cases_to_switch;
+	public static String QuickFixAddVirtualKeyword_add_virtual;
+	public static String QuickFixAddBlock_add_block;
+	public static String QuickFixSizeOfParen_add_parens;
+	public static String QuickFixCppCast_static_cast;
+	public static String QuickFixCppCast_reinterpret_cast;
+	public static String QuickFixCppCast_const_cast;
+	public static String QuickFixCppCast_dynamic_cast;
 
 	static {
 		NLS.initializeMessages(QuickFixMessages.class.getName(), QuickFixMessages.class);

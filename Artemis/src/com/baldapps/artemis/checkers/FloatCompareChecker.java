@@ -25,7 +25,7 @@ import org.eclipse.cdt.core.dom.ast.IType;
 import org.eclipse.cdt.internal.core.dom.parser.ValueFactory;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil;
 
-import com.baldapps.artemis.utils.SemanticUtils;
+import com.baldapps.artemis.utils.IndexUtils;
 
 @SuppressWarnings("restriction")
 public class FloatCompareChecker extends AbstractIndexAstChecker {
@@ -42,7 +42,7 @@ public class FloatCompareChecker extends AbstractIndexAstChecker {
 				if (expr1 instanceof IASTIdExpression && expr2 instanceof IASTIdExpression) {
 					IBinding leftLeftBinding = ((IASTIdExpression) expr1).getName().resolveBinding();
 					IBinding rightLeftBinding = ((IASTIdExpression) expr2).getName().resolveBinding();
-					if (SemanticUtils.areEquivalentBindings(leftLeftBinding, rightLeftBinding,
+					if (IndexUtils.areEquivalentBindings(leftLeftBinding, rightLeftBinding,
 							expr1.getTranslationUnit().getIndex())) {
 						return true;
 					}
@@ -54,7 +54,7 @@ public class FloatCompareChecker extends AbstractIndexAstChecker {
 				} else if (expr1 instanceof IASTFieldReference && expr2 instanceof IASTFieldReference) {
 					IBinding leftLeftBinding = ((IASTFieldReference) expr1).getFieldName().resolveBinding();
 					IBinding rightLeftBinding = ((IASTFieldReference) expr2).getFieldName().resolveBinding();
-					if (SemanticUtils.areEquivalentBindings(leftLeftBinding, rightLeftBinding,
+					if (IndexUtils.areEquivalentBindings(leftLeftBinding, rightLeftBinding,
 							expr1.getTranslationUnit().getIndex())) {
 						return true;
 					}

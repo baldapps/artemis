@@ -17,7 +17,6 @@ import static org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUti
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
-import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassTemplate;
@@ -25,8 +24,7 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPFunction;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMethod;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPReferenceType;
-import org.eclipse.cdt.core.index.IIndex;
-import org.eclipse.cdt.core.index.IIndexBinding;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.ICPPDeferredClassInstance;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.CPPTemplates;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil;
 
@@ -84,23 +82,9 @@ public class SemanticUtils {
 		return false;
 	}
 
-	public static boolean areEquivalentBindings(IBinding binding1, IBinding binding2, IIndex index) {
-		if (binding1.equals(binding2)) {
+	public static boolean isTemplate(ICPPClassType clazz) {
+		if (ICPPClassTemplate.class.isInstance(clazz) || ICPPDeferredClassInstance.class.isInstance(clazz))
 			return true;
-		}
-		if ((binding1 instanceof IIndexBinding) != (binding2 instanceof IIndexBinding) && index != null) {
-			if (binding1 instanceof IIndexBinding) {
-				binding2 = index.adaptBinding(binding2);
-			} else {
-				binding1 = index.adaptBinding(binding1);
-			}
-			if (binding1 == null || binding2 == null) {
-				return false;
-			}
-			if (binding1.equals(binding2)) {
-				return true;
-			}
-		}
 		return false;
 	}
 }

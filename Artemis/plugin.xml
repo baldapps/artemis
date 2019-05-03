@@ -19,6 +19,34 @@
              class="com.baldapps.artemis.quickfix.QuickFixAddCaseSwitch"
              problemId="com.baldapps.artemis.checkers.MissCaseProblem">
        </resolution>
+       <resolution
+             class="com.baldapps.artemis.quickfix.QuickFixAddVirtualKeyword"
+             problemId="com.baldapps.artemis.checkers.ImplicitVirtualProblem">
+       </resolution>
+       <resolution
+             class="com.baldapps.artemis.quickfix.QuickFixAddBlock"
+             problemId="com.baldapps.artemis.checkers.MissBraceProblem">
+       </resolution>
+       <resolution
+             class="com.baldapps.artemis.quickfix.QuickFixSizeOfParen"
+             problemId="com.baldapps.artemis.checkers.SizeofNoParenProblem">
+       </resolution>
+       <resolution
+             class="com.baldapps.artemis.quickfix.QuickFixCppCastStatic"
+             problemId="org.eclipse.cdt.codan.internal.checkers.CStyleCastProblem">
+       </resolution>
+       <resolution
+             class="com.baldapps.artemis.quickfix.QuickFixCppCastDynamic"
+             problemId="org.eclipse.cdt.codan.internal.checkers.CStyleCastProblem">
+       </resolution>
+       <resolution
+             class="com.baldapps.artemis.quickfix.QuickFixCppCastConst"
+             problemId="org.eclipse.cdt.codan.internal.checkers.CStyleCastProblem">
+       </resolution>
+       <resolution
+             class="com.baldapps.artemis.quickfix.QuickFixCppCastReinterpret"
+             problemId="org.eclipse.cdt.codan.internal.checkers.CStyleCastProblem">
+       </resolution>
    </extension>
    <extension
          point="org.eclipse.cdt.codan.core.checkers">
@@ -202,7 +230,7 @@
            name="%checker.name.ClassMembersConst">
         <problem
               category="org.eclipse.cdt.codan.core.categories.CompilerErrors"
-              defaultEnabled="true"
+              defaultEnabled="false"
               defaultSeverity="Error"
               description="%problem.description.MemberCannotBeUsedInStatic"
               id="com.baldapps.artemis.checkers.MemberCannotBeUsedInStatic"
@@ -212,7 +240,7 @@
         </problem>
         <problem
               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
-              defaultEnabled="true"
+              defaultEnabled="false"
               defaultSeverity="Warning"
               description="%problem.description.MethodShouldBeStatic"
               id="com.baldapps.artemis.checkers.MethodShouldBeStatic"
@@ -221,7 +249,7 @@
         </problem>
         <problem
               category="org.eclipse.cdt.codan.core.categories.CompilerErrors"
-              defaultEnabled="true"
+              defaultEnabled="false"
               defaultSeverity="Error"
               description="%problem.description.MemberCannotBeWritten"
               id="com.baldapps.artemis.checkers.MemberCannotBeWritten"
@@ -231,7 +259,7 @@
         </problem>
         <problem
               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
-              defaultEnabled="true"
+              defaultEnabled="false"
               defaultSeverity="Warning"
               description="%problem.description.MethodShouldBeConst"
               id="com.baldapps.artemis.checkers.MethodShouldBeConst"
@@ -787,6 +815,21 @@
                markerType="org.eclipse.cdt.codan.core.codanProblem"
                messagePattern="%problem.messagePattern.ParByCopyProblem"
                name="%problem.name.ParByCopyProblem">
+         </problem>
+      </checker>
+      <checker
+            class="com.baldapps.artemis.checkers.FieldsClassesChecker"
+            id="com.baldapps.artemis.checkers.FieldsClassesChecker"
+            name="%checker.name.FieldsClassesChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.HidingFieldProblem"
+               id="com.baldapps.artemis.checkers.HidingFieldProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.HidingFieldProblem"
+               name="%problem.name.HidingFieldProblem">
          </problem>
       </checker>
    </extension>

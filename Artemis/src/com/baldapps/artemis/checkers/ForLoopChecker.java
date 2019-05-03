@@ -31,7 +31,7 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil;
 import org.eclipse.cdt.internal.core.model.ASTStringUtil;
 import org.eclipse.cdt.internal.core.pdom.dom.PDOMName;
 
-import com.baldapps.artemis.utils.SemanticUtils;
+import com.baldapps.artemis.utils.IndexUtils;
 
 @SuppressWarnings("restriction")
 public class ForLoopChecker extends AbstractIndexAstChecker {
@@ -50,7 +50,7 @@ public class ForLoopChecker extends AbstractIndexAstChecker {
 		@Override
 		public int visit(IASTName name) {
 			IBinding currentBinding = name.resolveBinding();
-			if (currentBinding != null && !(currentBinding instanceof IProblemBinding) && SemanticUtils
+			if (currentBinding != null && !(currentBinding instanceof IProblemBinding) && IndexUtils
 					.areEquivalentBindings(currentBinding, binding, name.getTranslationUnit().getIndex())) {
 				if ((CPPVariableReadWriteFlags.getReadWriteFlags(name) & PDOMName.WRITE_ACCESS) != 0) {
 					reportProblem(CNT_MODIFICATION_ID, name, ASTStringUtil.getSimpleName(name));
