@@ -37,7 +37,6 @@ import com.baldapps.artemis.utils.SemanticUtils;
 public class AssignmentOperatorChecker extends AbstractIndexAstChecker {
 	public static final String MISS_REF_ID = "com.baldapps.artemis.checkers.MissReferenceProblem"; //$NON-NLS-1$
 	public static final String MISS_SELF_CHECK_ID = "com.baldapps.artemis.checkers.MissSelfCheckProblem"; //$NON-NLS-1$
-	private static final String OPERATOR_EQ = "operator ="; //$NON-NLS-1$
 
 	@Override
 	public void processAst(IASTTranslationUnit ast) {
@@ -62,12 +61,8 @@ public class AssignmentOperatorChecker extends AbstractIndexAstChecker {
 					return PROCESS_SKIP;
 				IASTPointerOperator[] pointers = declMethod.getPointerOperators();
 				parameters = ((ICPPASTFunctionDeclarator) declMethod).getParameters();
-
 				if (pointers.length != 1 || !(pointers[0] instanceof ICPPASTReferenceOperator))
 					reportProblem(MISS_REF_ID, declaration);
-
-				if (!SemanticUtils.isCopyAssignmentOperator(method))
-					return PROCESS_SKIP;
 				decl = declaration;
 				return PROCESS_CONTINUE;
 			} else
@@ -142,7 +137,7 @@ public class AssignmentOperatorChecker extends AbstractIndexAstChecker {
 				IBinding binding = functionDefinition.getDeclarator().getName().resolveBinding();
 				if (binding instanceof ICPPMethod) {
 					ICPPMethod method = (ICPPMethod) binding;
-					if (OPERATOR_EQ.equals(method.getName()))
+					if (SemanticUtils.isCopyOrMoveAssignmentOperator(method))
 						return method;
 				}
 			}

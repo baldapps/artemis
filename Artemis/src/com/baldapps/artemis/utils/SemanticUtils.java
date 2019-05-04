@@ -32,6 +32,22 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil;
 public class SemanticUtils {
 	private static final String OPERATOR_ASSIGN = "operator ="; //$NON-NLS-1$
 
+	private enum CopyOrMoveOperatorKind {
+		COPY, MOVE, COPY_OR_MOVE
+	}
+
+	public static boolean isCopyAssignmentOperator(ICPPMethod method) {
+		return isAssignmentOperator(method, CopyOrMoveOperatorKind.COPY);
+	}
+
+	public static boolean isMoveAssignmentOperator(ICPPMethod method) {
+		return isAssignmentOperator(method, CopyOrMoveOperatorKind.MOVE);
+	}
+
+	public static boolean isCopyOrMoveAssignmentOperator(ICPPMethod method) {
+		return isAssignmentOperator(method, CopyOrMoveOperatorKind.COPY_OR_MOVE);
+	}
+
 	/**
 	 * Check if the method is a copy assignment operator, i.e. an overload of "operator="
 	 * with one parameter which is of the same class type.
@@ -39,7 +55,7 @@ public class SemanticUtils {
 	 * @return True if the method is a copy assignment operator, false otherwise
 	 * @since 6.7
 	 */
-	public static boolean isCopyAssignmentOperator(ICPPMethod method) {
+	private static boolean isAssignmentOperator(ICPPMethod method, CopyOrMoveOperatorKind kind) {
 		if (!OPERATOR_ASSIGN.equals(method.getName()))
 			return false;
 		if (!isCallableWithNumberOfArguments(method, 1))
@@ -47,6 +63,10 @@ public class SemanticUtils {
 		IType firstArgumentType = method.getType().getParameterTypes()[0];
 		firstArgumentType = SemanticUtil.getNestedType(firstArgumentType, TDEF);
 		if (!(firstArgumentType instanceof ICPPReferenceType))
+			return false;
+		if (kind == CopyOrMoveOperatorKind.MOVE && !((ICPPReferenceType) firstArgumentType).isRValueReference())
+			return false;
+		if (kind == CopyOrMoveOperatorKind.COPY && ((ICPPReferenceType) firstArgumentType).isRValueReference())
 			return false;
 		ICPPReferenceType firstArgReferenceType = (ICPPReferenceType) firstArgumentType;
 		firstArgumentType = firstArgReferenceType.getType();

@@ -30,7 +30,7 @@ import org.eclipse.ltk.core.refactoring.Change;
 import com.baldapps.artemis.checkers.ArtemisCoreActivator;
 
 @SuppressWarnings("restriction")
-public class QuickFixAddVirtualKeyword extends AbstractArtemisAstRewriteQuickFix {
+public class QuickFixImplicitVirtualMethod extends AbstractArtemisAstRewriteQuickFix {
 
 	@Override
 	public String getLabel() {

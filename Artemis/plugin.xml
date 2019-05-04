@@ -20,7 +20,7 @@
              problemId="com.baldapps.artemis.checkers.MissCaseProblem">
        </resolution>
        <resolution
-             class="com.baldapps.artemis.quickfix.QuickFixAddVirtualKeyword"
+             class="com.baldapps.artemis.quickfix.QuickFixImplicitVirtualMethod"
              problemId="com.baldapps.artemis.checkers.ImplicitVirtualProblem">
        </resolution>
        <resolution
@@ -46,6 +46,10 @@
        <resolution
              class="com.baldapps.artemis.quickfix.QuickFixCppCastReinterpret"
              problemId="org.eclipse.cdt.codan.internal.checkers.CStyleCastProblem">
+       </resolution>
+       <resolution
+             class="com.baldapps.artemis.quickfix.QuickFixNonVirtualDestructor"
+             problemId="org.eclipse.cdt.codan.internal.checkers.NonVirtualDestructorProblem">
        </resolution>
    </extension>
    <extension
@@ -830,6 +834,21 @@
                markerType="org.eclipse.cdt.codan.core.codanProblem"
                messagePattern="%problem.messagePattern.HidingFieldProblem"
                name="%problem.name.HidingFieldProblem">
+         </problem>
+      </checker>
+      <checker
+            class="com.baldapps.artemis.checkers.ClassFieldsCopiedChecker"
+            id="com.baldapps.artemis.checkers.ClassFieldsCopiedChecker"
+            name="%checker.name.ClassFieldsCopiedChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.ClassFieldsCopiedProblem"
+               id="com.baldapps.artemis.checkers.ClassFieldsCopiedProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.ClassFieldsCopiedProblem"
+               name="%problem.name.ClassFieldsCopiedProblem">
          </problem>
       </checker>
    </extension>
