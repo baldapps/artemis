@@ -76,10 +76,11 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Avoid using structures
 * Avoid to define functions with parameters passed by value
 * Avoid hiding fields
+* Use all fields in assignment operator
 
 ## Configuration
 
-For rules Configuration look for "Code analisys" in Eclipse preferences in C++ menu.
+For rules configuration look for "Code analisys" in Eclipse preferences in C++ menu.
 
 ## Bugs
 
