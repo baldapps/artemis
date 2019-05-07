@@ -45,6 +45,7 @@ import org.eclipse.cdt.core.dom.ast.IPointerType;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.IType;
 import org.eclipse.cdt.core.dom.ast.IVariable;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDeclarator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTLambdaExpression;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTReferenceOperator;
@@ -62,6 +63,7 @@ public class ReturnChecker extends AbstractAstFunctionChecker {
 	public static final String RET_LOCAL_ID = "com.baldapps.artemis.checkers.LocalVarReturn"; //$NON-NLS-1$
 	public static final String RET_PRIVATE_FIELD_ID = "com.baldapps.artemis.checkers.RetPrivateField"; //$NON-NLS-1$
 	public static final String NO_RET_THIS_ID = "com.baldapps.artemis.checkers.NoRetThisOpAssign"; //$NON-NLS-1$
+	public static final String RET_FIELD_FROM_CONST_ID = "com.baldapps.artemis.checkers.RetFieldFromConstMethod"; //$NON-NLS-1$
 
 	private IType cachedReturnType = null;
 
@@ -73,6 +75,8 @@ public class ReturnChecker extends AbstractAstFunctionChecker {
 		RET_TYPE type;
 		boolean isConst;
 		boolean mustBeThis;
+		boolean isMethodConst;
+		boolean isMethodPublic;
 	}
 
 	private class ReturnTypeAnalizer {
@@ -158,10 +162,21 @@ public class ReturnChecker extends AbstractAstFunctionChecker {
 					}
 				}
 			}
-			if (!retType.isConst && binding instanceof ICPPField && retType.type != RET_TYPE.BY_VALUE
-					&& ((ICPPField) binding).getVisibility() != ICPPMember.v_public) {
-				reportProblem(RET_PRIVATE_FIELD_ID, expr, binding.getName());
+			if (!retType.isConst && binding instanceof ICPPField && retType.type != RET_TYPE.BY_VALUE) {
+				if (retType.type == RET_TYPE.BY_PTR && isPointer((ICPPField) binding)) {
+					return;
+				}
+				if (((ICPPField) binding).getVisibility() != ICPPMember.v_public && retType.isMethodPublic) {
+					reportProblem(RET_PRIVATE_FIELD_ID, expr, binding.getName());
+				}
+				if (retType.isMethodConst)
+					reportProblem(RET_FIELD_FROM_CONST_ID, expr, binding.getName());
 			}
+		}
+
+		private boolean isPointer(ICPPField binding) {
+			IType t = SemanticUtil.getNestedType(binding.getType(), SemanticUtil.TDEF);
+			return t instanceof IPointerType;
 		}
 
 		private void visit(IASTUnaryExpression expr) {
@@ -183,6 +198,16 @@ public class ReturnChecker extends AbstractAstFunctionChecker {
 			ReturnInfo info = new ReturnInfo();
 			info.mustBeThis = isOpAssign;
 			info.isConst = func.getDeclSpecifier().isConst();
+			IBinding binding = func.getDeclarator().getName().resolveBinding();
+			info.isMethodPublic = false;
+			info.isMethodConst = false;
+			if (binding instanceof ICPPMethod) {
+				ICPPMethod method = (ICPPMethod) binding;
+				info.isMethodPublic = method.getVisibility() == ICPPMember.v_public;
+			}
+			if (func.getDeclarator() instanceof ICPPASTFunctionDeclarator) {
+				info.isMethodConst = ((ICPPASTFunctionDeclarator) func.getDeclarator()).isConst();
+			}
 			IASTPointerOperator[] ptr = func.getDeclarator().getPointerOperators();
 			if (ptr.length > 0 && ptr[0] instanceof ICPPASTReferenceOperator) {
 				info.type = RET_TYPE.BY_REF;

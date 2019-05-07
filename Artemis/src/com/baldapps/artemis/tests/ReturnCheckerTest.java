@@ -20,7 +20,8 @@ public class ReturnCheckerTest extends ArtemisCheckerTestCase {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		enableProblems(ReturnChecker.RET_LOCAL_ID, ReturnChecker.RET_PRIVATE_FIELD_ID, ReturnChecker.NO_RET_THIS_ID);
+		enableProblems(ReturnChecker.RET_LOCAL_ID, ReturnChecker.RET_PRIVATE_FIELD_ID, ReturnChecker.NO_RET_THIS_ID,
+				ReturnChecker.RET_FIELD_FROM_CONST_ID);
 	}
 
 	@Override
@@ -123,5 +124,33 @@ public class ReturnCheckerTest extends ArtemisCheckerTestCase {
 	//	}
 	public void testReturnOpAssign() throws Exception {
 		checkSampleAboveCpp();
+	}
+
+	//	class Test {
+	//	private:
+	//		int field;
+	//	public:
+	//		int* get() const {
+	//			return &field;
+	//		}
+	//	}
+	public void testReturnFromConst() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(6, ReturnChecker.RET_FIELD_FROM_CONST_ID);
+		checkErrorLine(6, ReturnChecker.RET_PRIVATE_FIELD_ID);
+	}
+
+	//	class Test {
+	//	private:
+	//		int* field;
+	//	public:
+	//		int* get() const {
+	//			return field;
+	//		}
+	//	}
+	public void testReturnFromConstPtr() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ReturnChecker.RET_FIELD_FROM_CONST_ID);
+		checkNoErrorsOfKind(ReturnChecker.RET_PRIVATE_FIELD_ID);
 	}
 }

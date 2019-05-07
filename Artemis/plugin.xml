@@ -370,6 +370,16 @@
                messagePattern="%problem.messagePattern.NoRetThisOpAssign"
                name="%problem.name.NoRetThisOpAssign">
          </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               defaultEnabled="false"
+               defaultSeverity="Error"
+               description="%problem.description.RetFieldFromConstMethod"
+               id="com.baldapps.artemis.checkers.RetFieldFromConstMethod"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.RetFieldFromConstMethod"
+               name="%problem.name.RetFieldFromConstMethod">
+         </problem>
       </checker>
       <checker
             class="com.baldapps.artemis.checkers.AllocationChecker"
