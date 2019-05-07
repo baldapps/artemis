@@ -301,7 +301,7 @@ You may add additional accurate notices of copyright ownership.
    </url>
 
    <requires>
-      <import feature="org.eclipse.cdt" version="9.7.0.qualifier" match="greaterOrEqual"/>
+      <import feature="org.eclipse.cdt" version="9.7.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin
