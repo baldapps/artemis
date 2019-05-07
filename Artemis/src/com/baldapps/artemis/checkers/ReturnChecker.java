@@ -16,6 +16,8 @@ import java.util.Stack;
 import org.eclipse.cdt.codan.checkers.CodanCheckersActivator;
 import org.eclipse.cdt.codan.core.cxx.CxxAstUtils;
 import org.eclipse.cdt.codan.core.cxx.model.AbstractAstFunctionChecker;
+import org.eclipse.cdt.codan.core.model.CheckerLaunchMode;
+import org.eclipse.cdt.codan.core.model.IProblemWorkingCopy;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.EScopeKind;
@@ -69,6 +71,19 @@ public class ReturnChecker extends AbstractAstFunctionChecker {
 
 	private enum RET_TYPE {
 		BY_REF, BY_PTR, BY_VALUE
+	}
+
+	@Override
+	public void initPreferences(IProblemWorkingCopy problem) {
+		super.initPreferences(problem);
+		switch (problem.getId()) {
+		case RET_FIELD_FROM_CONST_ID:
+			getLaunchModePreference(problem).setRunningMode(CheckerLaunchMode.RUN_ON_FULL_BUILD, false);
+			getLaunchModePreference(problem).setRunningMode(CheckerLaunchMode.RUN_ON_INC_BUILD, false);
+			break;
+		default:
+			break;
+		}
 	}
 
 	private static class ReturnInfo {
