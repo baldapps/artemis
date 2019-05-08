@@ -77,6 +77,7 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Avoid to define functions with parameters passed by value
 * Avoid hiding fields
 * Use all fields in assignment operator
+* Returning no const class field from const method
 
 ## Configuration
 
