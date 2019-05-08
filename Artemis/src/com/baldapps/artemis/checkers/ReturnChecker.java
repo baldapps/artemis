@@ -59,6 +59,7 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPReferenceType;
 import org.eclipse.cdt.core.parser.util.CharArrayUtils;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.CPPTemplates;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil;
+import org.eclipse.cdt.internal.core.model.ASTStringUtil;
 
 @SuppressWarnings("restriction")
 public class ReturnChecker extends AbstractAstFunctionChecker {
@@ -97,10 +98,12 @@ public class ReturnChecker extends AbstractAstFunctionChecker {
 	private class ReturnTypeAnalizer {
 		private ReturnInfo retType;
 		private Stack<Integer> innermostOp;
+		private IASTFieldReference firstFieldReference;
 
 		public ReturnTypeAnalizer(ReturnInfo info) {
 			retType = info;
 			innermostOp = new Stack<>();
+			firstFieldReference = null;
 		}
 
 		public void visit(IASTExpression expr) {
@@ -125,7 +128,10 @@ public class ReturnChecker extends AbstractAstFunctionChecker {
 		}
 
 		private void visit(IASTFieldReference expr) {
+			if (firstFieldReference == null)
+				firstFieldReference = expr;
 			visit(expr.getFieldOwner());
+			firstFieldReference = null;
 		}
 
 		private void visit(IASTCastExpression expr) {
@@ -182,16 +188,34 @@ public class ReturnChecker extends AbstractAstFunctionChecker {
 					return;
 				}
 				if (((ICPPField) binding).getVisibility() != ICPPMember.v_public && retType.isMethodPublic) {
-					reportProblem(RET_PRIVATE_FIELD_ID, expr, binding.getName());
+					report(RET_PRIVATE_FIELD_ID, expr);
 				}
 				if (retType.isMethodConst)
-					reportProblem(RET_FIELD_FROM_CONST_ID, expr, binding.getName());
+					report(RET_FIELD_FROM_CONST_ID, expr);
 			}
 		}
 
+		private void report(String id, IASTIdExpression expr) {
+			if (firstFieldReference != null) {
+				reportProblem(id, firstFieldReference.getFieldName(),
+						ASTStringUtil.getSimpleName(firstFieldReference.getFieldName()));
+				return;
+			}
+			reportProblem(id, expr, ASTStringUtil.getExpressionString(expr));
+		}
+
 		private boolean isPointer(ICPPField binding) {
-			IType t = SemanticUtil.getNestedType(binding.getType(), SemanticUtil.TDEF);
-			return t instanceof IPointerType;
+			if (firstFieldReference != null) {
+				IBinding fRef = firstFieldReference.getFieldName().resolveBinding();
+				if (fRef instanceof IVariable) {
+					IType t = SemanticUtil.getNestedType(((IVariable) fRef).getType(), SemanticUtil.TDEF);
+					return t instanceof IPointerType;
+				}
+				return false;
+			} else {
+				IType t = SemanticUtil.getNestedType(binding.getType(), SemanticUtil.TDEF);
+				return t instanceof IPointerType;
+			}
 		}
 
 		private void visit(IASTUnaryExpression expr) {
