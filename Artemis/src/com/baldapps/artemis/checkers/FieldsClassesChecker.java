@@ -28,6 +28,7 @@ import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.ClassTypeHelper;
 import org.eclipse.core.runtime.CoreException;
 
+import com.baldapps.artemis.utils.ClassUtils;
 import com.baldapps.artemis.utils.IndexUtils;
 
 @SuppressWarnings("restriction")
@@ -78,12 +79,12 @@ public class FieldsClassesChecker extends AbstractIndexAstChecker {
 						if (binding instanceof ICPPClassType) {
 							ICPPClassType classType = (ICPPClassType) binding;
 							ICPPField[] fields = classType.getDeclaredFields();
-							ICPPClassType[] bases = ClassTypeHelper.getAllBases(classType);
+							ICPPClassType[] bases = ClassUtils.getAllVisibleBases(classType);
 							for (ICPPField f : fields) {
 								outer: for (ICPPClassType b : bases) {
 									ICPPField[] fieldsFromBase = ClassTypeHelper.getFields(b);
 									for (ICPPField ff : fieldsFromBase) {
-										if (ff.getVisibility() != ICPPMember.v_private
+										if ((ff.getVisibility() != ICPPMember.v_private)
 												&& f.getName().equals(ff.getName())) {
 											reportProblem(HIDING_FIELD, f, element, f.getName(), b.getName());
 											break outer;

@@ -49,7 +49,6 @@ public class MemberClassesChecker extends AbstractIndexAstChecker {
 	public static final String MULTIPLE_INHERITANCE = "com.baldapps.artemis.checkers.AvoidMultipleInheritanceProblem"; //$NON-NLS-1$
 	public static final String COPY_CTOR_ONLY = "com.baldapps.artemis.checkers.CopyCtorOnlyProblem"; //$NON-NLS-1$
 	public static final String ASSIGN_OP_ONLY = "com.baldapps.artemis.checkers.AssignOpOnlyProblem"; //$NON-NLS-1$
-	public static final String HIDING_FIELD = "com.baldapps.artemis.checkers.HidingFieldProblem"; //$NON-NLS-1$
 
 	private static final List<String> illOverloads = Arrays.asList("operator &&", "operator ||", "operator ,");
 
