@@ -37,10 +37,12 @@ import org.eclipse.cdt.core.dom.ast.IEnumeration;
 import org.eclipse.cdt.core.dom.ast.IEnumerator;
 import org.eclipse.cdt.core.dom.ast.INodeFactory;
 import org.eclipse.cdt.core.dom.ast.IType;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPEnumeration;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.internal.core.dom.parser.ValueFactory;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.CPPVisitor;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -119,8 +121,18 @@ public class QuickFixAddCaseSwitch extends AbstractArtemisAstRewriteQuickFix {
 		Map<String, Number> enumValues = new HashMap<>();
 		if (type instanceof IEnumeration) {
 			IEnumerator[] enums = ((IEnumeration) type).getEnumerators();
+			String prefix = "";
+			if (type instanceof ICPPEnumeration) {
+				String[] qualName = CPPVisitor.getQualifiedName((IEnumeration) type);
+				StringBuilder builder = new StringBuilder();
+				for (int i = 0; i < qualName.length - 1; ++i) {
+					builder.append(qualName[i]);
+					builder.append("::");
+				}
+				prefix = builder.toString();
+			}
 			for (IEnumerator e : enums) {
-				enumValues.put(e.getName(), e.getValue().numberValue());
+				enumValues.put(prefix + e.getName(), e.getValue().numberValue());
 			}
 		} else
 			return enumValues;
