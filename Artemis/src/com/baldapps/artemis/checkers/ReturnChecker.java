@@ -51,6 +51,7 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDeclarator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTLambdaExpression;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTReferenceOperator;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPConstructor;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPField;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMember;
@@ -187,6 +188,19 @@ public class ReturnChecker extends AbstractAstFunctionChecker {
 				if (retType.type == RET_TYPE.BY_PTR && isPointer((ICPPField) binding)) {
 					return;
 				}
+				Integer op = null;
+				if (!innermostOp.empty())
+					op = innermostOp.peek();
+				if (retType.type == RET_TYPE.BY_PTR && op != null && op == IASTUnaryExpression.op_star) {
+					ICPPClassType klass = getClass((ICPPField) binding);
+					if (klass != null) {
+						ICPPMethod[] methods = klass.getAllDeclaredMethods();
+						for (ICPPMethod m : methods) {
+							if (m.getName().equals("operator *"))
+								return;
+						}
+					}
+				}
 				if (((ICPPField) binding).getVisibility() != ICPPMember.v_public && retType.isMethodPublic) {
 					report(RET_PRIVATE_FIELD_ID, expr);
 				}
@@ -216,6 +230,23 @@ public class ReturnChecker extends AbstractAstFunctionChecker {
 				IType t = SemanticUtil.getNestedType(binding.getType(), SemanticUtil.TDEF);
 				return t instanceof IPointerType;
 			}
+		}
+
+		private ICPPClassType getClass(ICPPField binding) {
+			if (firstFieldReference != null) {
+				IBinding fRef = firstFieldReference.getFieldName().resolveBinding();
+				if (fRef instanceof IVariable) {
+					IType t = SemanticUtil.getNestedType(((IVariable) fRef).getType(), SemanticUtil.TDEF);
+					if (t instanceof ICPPClassType)
+						return (ICPPClassType) t;
+				}
+				return null;
+			} else {
+				IType t = SemanticUtil.getNestedType(binding.getType(), SemanticUtil.TDEF);
+				if (t instanceof ICPPClassType)
+					return (ICPPClassType) t;
+			}
+			return null;
 		}
 
 		private void visit(IASTUnaryExpression expr) {
