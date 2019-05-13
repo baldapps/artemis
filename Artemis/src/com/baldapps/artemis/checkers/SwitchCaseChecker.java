@@ -37,6 +37,7 @@ import org.eclipse.cdt.core.dom.ast.IEnumeration;
 import org.eclipse.cdt.core.dom.ast.IEnumerator;
 import org.eclipse.cdt.core.dom.ast.IType;
 import org.eclipse.cdt.internal.core.dom.parser.ValueFactory;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil;
 
 @SuppressWarnings("restriction")
 public class SwitchCaseChecker extends AbstractIndexAstChecker {
@@ -67,7 +68,7 @@ public class SwitchCaseChecker extends AbstractIndexAstChecker {
 				if (statement instanceof IASTSwitchStatement && !isProducedByMacroExpansion(statement)) {
 					IASTExpression controller = ((IASTSwitchStatement) statement).getControllerExpression();
 					IASTStatement bodyStmt = ((IASTSwitchStatement) statement).getBody();
-					IType type = controller.getExpressionType();
+					IType type = SemanticUtil.getUltimateType(controller.getExpressionType(), true);
 					Set<Number> enumValues = new HashSet<>();
 					boolean defaultFound = false;
 					boolean isEnumSwitch = false;

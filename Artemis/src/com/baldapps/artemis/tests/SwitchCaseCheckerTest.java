@@ -12,7 +12,6 @@ package com.baldapps.artemis.tests;
 
 import com.baldapps.artemis.checkers.SwitchCaseChecker;
 
-
 /**
  * Test for {@link SwitchCaseChecker} class
  */
@@ -145,6 +144,24 @@ public class SwitchCaseCheckerTest extends ArtemisCheckerTestCase {
 	//	return 0;
 	//}
 	public void testSwitchDefaultClausePresent() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(MISS_CASE_ID);
+		checkNoErrorsOfKind(MISS_DEFAULT_ID);
+	}
+
+	//enum FRUIT {
+	//	APPLE, PEAR, BANANA
+	//};
+	//void foo(const FRUIT& f) {
+	//	switch (f) {
+	//	case APPLE:
+	//	case PEAR:
+	//	case BANANA:
+	//		break;
+	//	}
+	//	return 0;
+	//}
+	public void testSwitchConstParameter() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(MISS_CASE_ID);
 		checkNoErrorsOfKind(MISS_DEFAULT_ID);

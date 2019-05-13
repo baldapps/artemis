@@ -43,6 +43,7 @@ import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.internal.core.dom.parser.ValueFactory;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.CPPVisitor;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -117,7 +118,7 @@ public class QuickFixAddCaseSwitch extends AbstractArtemisAstRewriteQuickFix {
 	private Map<String, Number> getMissingCases(IASTSwitchStatement statement) {
 		IASTExpression controller = statement.getControllerExpression();
 		IASTStatement bodyStmt = statement.getBody();
-		IType type = controller.getExpressionType();
+		IType type = SemanticUtil.getUltimateType(controller.getExpressionType(), true);
 		Map<String, Number> enumValues = new HashMap<>();
 		if (type instanceof IEnumeration) {
 			IEnumerator[] enums = ((IEnumeration) type).getEnumerators();
