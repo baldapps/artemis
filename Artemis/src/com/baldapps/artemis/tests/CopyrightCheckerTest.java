@@ -42,4 +42,78 @@ public class CopyrightCheckerTest extends ArtemisCheckerTestCase {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(ERR_ID);
 	}
+
+	////============================================================================
+	//// Name : test.cpp
+	//// Author : Blah
+	//// Version : 1.0
+	//// Copyright : Your copyright notice
+	//// Description : Hello World in C++, Ansi-style
+	////============================================================================
+	//
+	//int main() {return 0;}
+	public void testWithCopyrightMultiline() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_ID);
+	}
+
+	//// Just another comment here
+	//
+	////============================================================================
+	//// Name : test.cpp
+	//// Author : Blah
+	//// Version : 1.0
+	//// Copyright : Your copyright notice
+	//// Description : Hello World in C++, Ansi-style
+	////============================================================================
+	//
+	//int main() {return 0;}
+	public void testWithCopyrightMultilineNoHeader() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(1, ERR_ID);
+	}
+
+	////============================================================================
+	//// Name : test.cpp
+	//// Author : Blah
+	//// Version : 1.0
+	//// Copyright : Your copyright notice
+	//// Description : Hello World in C++, Ansi-style
+	////============================================================================
+	//
+	//// Just another comment here
+	//int main() {return 0;}
+	public void testWithCopyrightMultilinePostComment() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_ID);
+	}
+
+	///****************************************************************************
+	// * Name : test.cpp
+	// * Author : Blah
+	// * Version : 1.0
+	// * Copyright : Your copyright notice
+	// * Description : Hello World in C++, Ansi-style
+	// ****************************************************************************/
+	//
+	//int main() {return 0;}
+	public void testWithCopyrightBlock() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_ID);
+	}
+
+	//// Just another comment here
+	///****************************************************************************
+	// * Name : test.cpp
+	// * Author : Blah
+	// * Version : 1.0
+	// * Copyright : Your copyright notice
+	// * Description : Hello World in C++, Ansi-style
+	// ****************************************************************************/
+	//
+	//int main() {return 0;}
+	public void testWithCopyrightBlockNoHeader() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(1, ERR_ID);
+	}
 }

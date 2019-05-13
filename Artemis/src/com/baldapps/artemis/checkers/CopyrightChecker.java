@@ -32,6 +32,9 @@ public class CopyrightChecker extends AbstractIndexAstChecker {
 	public static final String PARAM_REGEX = "regex"; //$NON-NLS-1$
 	private static final String DEF_REGEX = ".*Copyright.*"; //$NON-NLS-1$
 	private Pattern fPattern;
+	private StringBuilder builder = new StringBuilder();
+	private int lastOffset;
+	private boolean multiLine = false;
 
 	/**
 	 * Internal result
@@ -50,6 +53,9 @@ public class CopyrightChecker extends AbstractIndexAstChecker {
 
 	@Override
 	public void processAst(IASTTranslationUnit ast) {
+		multiLine = false;
+		lastOffset = 0;
+		builder.setLength(0);
 		String regex = getRegex();
 		if (regex == null || regex.isEmpty())
 			regex = DEF_REGEX;
@@ -70,7 +76,12 @@ public class CopyrightChecker extends AbstractIndexAstChecker {
 			if (found == Result.FOUND || found == Result.FOUND_MATCH)
 				break;
 		}
-		if (found != Result.FOUND_MATCH)
+		if (found == Result.NOT_FOUND && multiLine) {
+			String c = builder.toString();
+			if (!fPattern.matcher(c).matches()) {
+				setProblem();
+			}
+		} else if (found != Result.FOUND_MATCH)
 			setProblem();
 	}
 
@@ -91,9 +102,21 @@ public class CopyrightChecker extends AbstractIndexAstChecker {
 			if (nodeLocation == null) {
 				return Result.NOT_FOUND;
 			}
-			if (nodeLocation.getNodeOffset() != 0)
-				return Result.NOT_FOUND;
 			String c = comment.getRawSignature();
+			int currentOffset = nodeLocation.getNodeOffset();
+			if (!comment.isBlockComment() && c.startsWith("//") //$NON-NLS-1$
+					&& (currentOffset == lastOffset + 1 || (!multiLine && currentOffset == 0))) {
+				builder.append(c);
+				builder.append("\n"); //$NON-NLS-1$
+				lastOffset = nodeLocation.getNodeOffset() + nodeLocation.getNodeLength();
+				multiLine = true;
+				return Result.NOT_FOUND;
+			}
+			if (multiLine) {
+				c = builder.toString();
+			} else if (nodeLocation.getNodeOffset() != 0) {
+				return Result.NOT_FOUND;
+			}
 			if (fPattern.matcher(c).matches())
 				return Result.FOUND_MATCH;
 			return Result.FOUND;
