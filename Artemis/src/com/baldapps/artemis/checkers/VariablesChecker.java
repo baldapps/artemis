@@ -25,13 +25,16 @@ import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.ICompositeType;
 import org.eclipse.cdt.core.dom.ast.IField;
 import org.eclipse.cdt.core.dom.ast.IScope;
+import org.eclipse.cdt.core.dom.ast.IType;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCatchHandler;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPConstructor;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPParameter;
 import org.eclipse.cdt.core.dom.ast.cpp.SemanticQueries;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil;
 
+@SuppressWarnings("restriction")
 public class VariablesChecker extends AbstractIndexAstChecker {
 	public static final String STATIC_VAR_ID = "com.baldapps.artemis.checkers.StaticVariableProblem"; //$NON-NLS-1$
 	public static final String VAR_MULTI_DEC_ID = "com.baldapps.artemis.checkers.MultipleDeclarationsProblem"; //$NON-NLS-1$
@@ -109,9 +112,10 @@ public class VariablesChecker extends AbstractIndexAstChecker {
 								CodanCheckersActivator.log(e);
 								continue;
 							}
+							IType type = SemanticUtil.getUltimateType(((IVariable) binding).getType(), true);
 							if (binding.getLinkage().getLinkageID() == ILinkage.CPP_LINKAGE_ID
-									&& ((IVariable) binding).getType() instanceof ICompositeType) {
-								ICompositeType comp = (ICompositeType) ((IVariable) binding).getType();
+									&& type instanceof ICompositeType) {
+								ICompositeType comp = (ICompositeType) type;
 								if ((comp.getKey() == ICompositeType.k_struct
 										|| comp.getKey() == ICompositeType.k_union) && d.getInitializer() == null) {
 									ICPPConstructor[] ctors = ((ICPPClassType) comp).getConstructors();

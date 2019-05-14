@@ -88,6 +88,20 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 
 	//struct Bar {
 	//   int a;
+	//}
+	//typedef struct Bar Foo;
+	//void foo() {
+	//    Foo b;
+	//}
+	public void testWithStructTypedef() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(6, MISS_INIT_ID);
+		checkNoErrorsOfKind(MULTI_ID);
+		checkNoErrorsOfKind(STATIC_ID);
+	}
+
+	//struct Bar {
+	//   int a;
 	//   Bar() {a = 0;}
 	//}
 	//void foo() {
