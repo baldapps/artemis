@@ -274,7 +274,8 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 		}
 
 		private boolean isWrittenToNonMutable(IASTName name) {
-			if ((CPPVariableReadWriteFlags.getReadWriteFlags(name) & PDOMName.WRITE_ACCESS) != 0) {
+			if ((CPPVariableReadWriteFlags.getReadWriteFlags(name) & PDOMName.WRITE_ACCESS) != 0
+					&& (CPPVariableReadWriteFlags.getReadWriteFlags(name) & PDOMName.READ_ACCESS) == 0) {
 				IBinding binding = name.resolveBinding();
 				if (binding instanceof ICPPField) {
 					return !((ICPPField) binding).isMutable();
