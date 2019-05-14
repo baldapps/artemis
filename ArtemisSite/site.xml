@@ -13,4 +13,5 @@
    <feature url="features/ArtemisFeature_1.4.1.qualifier.jar" id="ArtemisFeature" version="1.4.1.qualifier"/>
    <feature url="features/ArtemisFeature_1.4.2.qualifier.jar" id="ArtemisFeature" version="1.4.2.qualifier"/>
    <feature url="features/ArtemisFeature_1.4.3.qualifier.jar" id="ArtemisFeature" version="1.4.3.qualifier"/>
+   <feature url="features/ArtemisFeature_1.4.4.qualifier.jar" id="ArtemisFeature" version="1.4.4.qualifier"/>
 </site>
