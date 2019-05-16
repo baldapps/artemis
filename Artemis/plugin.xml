@@ -845,6 +845,16 @@
                messagePattern="%problem.messagePattern.HidingFieldProblem"
                name="%problem.name.HidingFieldProblem">
          </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.FieldsNoCtorProblem"
+               id="com.baldapps.artemis.checkers.FieldsNoCtorProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.FieldsNoCtorProblem"
+               name="%problem.name.FieldsNoCtorProblem">
+         </problem>
       </checker>
       <checker
             class="com.baldapps.artemis.checkers.ClassFieldsCopiedChecker"

@@ -18,11 +18,12 @@ import com.baldapps.artemis.checkers.FieldsClassesChecker;
 public class FieldsClassesCheckerTest extends ArtemisCheckerTestCase {
 
 	public static final String ERR_ID = FieldsClassesChecker.HIDING_FIELD;
+	public static final String NO_CTOR_ID = FieldsClassesChecker.FIELDS_NO_CTOR;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		enableProblems(ERR_ID);
+		enableProblems(ERR_ID, NO_CTOR_ID);
 	}
 
 	@Override
@@ -68,4 +69,33 @@ public class FieldsClassesCheckerTest extends ArtemisCheckerTestCase {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLine(5, ERR_ID);
 	}
+
+	//class Base {
+	//public:
+	//	int a;
+	//};
+	public void testNoCtor() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(1, NO_CTOR_ID);
+	}
+
+	//class Base {
+	//public:
+	//	static int a;
+	//};
+	public void testNoCtorStatic() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(NO_CTOR_ID);
+	}
+
+	//class Base {
+	//public:
+	//	int a;
+	//	Base();
+	//};
+	public void testCtor() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(NO_CTOR_ID);
+	}
+
 }

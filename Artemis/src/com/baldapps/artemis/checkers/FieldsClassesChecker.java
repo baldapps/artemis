@@ -22,8 +22,10 @@ import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPConstructor;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPField;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMember;
+import org.eclipse.cdt.core.dom.ast.cpp.SemanticQueries;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.ClassTypeHelper;
 import org.eclipse.core.runtime.CoreException;
@@ -34,6 +36,7 @@ import com.baldapps.artemis.utils.IndexUtils;
 @SuppressWarnings("restriction")
 public class FieldsClassesChecker extends AbstractIndexAstChecker {
 	public static final String HIDING_FIELD = "com.baldapps.artemis.checkers.HidingFieldProblem"; //$NON-NLS-1$
+	public static final String FIELDS_NO_CTOR = "com.baldapps.artemis.checkers.FieldsNoCtorProblem"; //$NON-NLS-1$
 
 	private IIndex index;
 
@@ -69,6 +72,26 @@ public class FieldsClassesChecker extends AbstractIndexAstChecker {
 			shouldVisitDeclSpecifiers = true;
 		}
 
+		private void checkCtor(IASTDeclSpecifier element, ICPPClassType classType, ICPPField[] fields) {
+			if (fields.length == 0)
+				return;
+			boolean found = false;
+			for (ICPPField f : fields) {
+				if (!f.isStatic() && !f.isExtern() && !f.isConstexpr()) {
+					found = true;
+					break;
+				}
+			}
+			if (!found)
+				return;
+			ICPPConstructor[] ctors = classType.getConstructors();
+			for (ICPPConstructor c : ctors) {
+				if (!c.isImplicit() && !c.isDeleted() && !SemanticQueries.isCopyOrMoveConstructor(c))
+					return;
+			}
+			reportProblem(FIELDS_NO_CTOR, element, classType.getName());
+		}
+
 		@Override
 		public int visit(IASTDeclSpecifier element) {
 			try {
@@ -79,6 +102,7 @@ public class FieldsClassesChecker extends AbstractIndexAstChecker {
 						if (binding instanceof ICPPClassType) {
 							ICPPClassType classType = (ICPPClassType) binding;
 							ICPPField[] fields = classType.getDeclaredFields();
+							checkCtor(element, classType, fields);
 							ICPPClassType[] bases = ClassUtils.getAllVisibleBases(classType);
 							for (ICPPField f : fields) {
 								outer: for (ICPPClassType b : bases) {
