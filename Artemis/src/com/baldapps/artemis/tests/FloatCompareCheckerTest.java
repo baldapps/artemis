@@ -56,7 +56,7 @@ public class FloatCompareCheckerTest extends ArtemisCheckerTestCase {
 	//}
 	public void testDifferentWithFloat() throws Exception {
 		loadCodeAndRun(getAboveComment());
-		checkNoErrorsOfKind(ERR_ID);
+		checkErrorLine(4, ERR_ID);
 	}
 
 	//int main() {
@@ -186,5 +186,35 @@ public class FloatCompareCheckerTest extends ArtemisCheckerTestCase {
 	public void testWithIndirectEqual4() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLine(3, ERR_ID);
+	}
+
+	//int foo() {
+	//	float a1;
+	//	if (a1 < 3.14 || a1 > 3.14)
+	//		a1++;
+	//}
+	public void testWithIndirectNotEqual1() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(3, ERR_ID);
+	}
+
+	//int foo() {
+	//	float a1;
+	//	if (a1 > 3.14 || a1 < 3.14)
+	//		a1++;
+	//}
+	public void testWithIndirectNotEqual2() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(3, ERR_ID);
+	}
+
+	//int foo() {
+	//	float a1;
+	//	if (a1 < 3.14 || a1 > 3.15)
+	//		a1++;
+	//}
+	public void testWithUpperLowerBounds() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_ID);
 	}
 }
