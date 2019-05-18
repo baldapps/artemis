@@ -21,14 +21,11 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-import org.eclipse.cdt.core.dom.ast.IBasicType;
 import org.eclipse.cdt.core.dom.ast.IBinding;
-import org.eclipse.cdt.core.dom.ast.IType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPConstructor;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMethod;
-import org.eclipse.cdt.core.dom.ast.cpp.ICPPParameter;
 import org.eclipse.cdt.core.dom.ast.cpp.SemanticQueries;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil;
@@ -84,25 +81,6 @@ public class ExplicitChecker extends AbstractIndexAstChecker {
 			shouldVisitDeclSpecifiers = true;
 		}
 
-		private boolean hasTriviallyConstuctor(ICPPParameter p) {
-			IType type = SemanticUtil.getUltimateType(p.getType(), true);
-			if (type instanceof IBasicType)
-				return true;
-			if (type instanceof ICPPClassType) {
-				ICPPConstructor[] ctors = ((ICPPClassType) type).getConstructors();
-				for (ICPPConstructor m : ctors) {
-					if (!m.isExplicit() && !m.isImplicit() && m.getParameters().length == 1
-							&& !SemanticQueries.isCopyOrMoveConstructor(m)
-							&& !type.isSameType(SemanticUtil.getUltimateType(m.getParameters()[0].getType(), true))
-							&& hasTriviallyConstuctor(m.getParameters()[0])) {
-						return true;
-					}
-				}
-				return false;
-			}
-			return false;
-		}
-
 		@Override
 		public int visit(IASTDeclSpecifier element) {
 			try {
@@ -115,8 +93,7 @@ public class ExplicitChecker extends AbstractIndexAstChecker {
 							ICPPConstructor[] ctors = classType.getConstructors();
 							for (ICPPConstructor m : ctors) {
 								if (!m.isExplicit() && !m.isImplicit() && m.getParameters().length == 1
-										&& !SemanticQueries.isCopyOrMoveConstructor(m)
-										&& hasTriviallyConstuctor(m.getParameters()[0])) {
+										&& !SemanticQueries.isCopyOrMoveConstructor(m)) {
 									reportProblem(USE_EXPLICIT_ID, m, element);
 								}
 							}
