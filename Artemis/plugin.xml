@@ -51,6 +51,10 @@
              class="com.baldapps.artemis.quickfix.QuickFixNonVirtualDestructor"
              problemId="org.eclipse.cdt.codan.internal.checkers.NonVirtualDestructorProblem">
        </resolution>
+       <resolution
+             class="com.baldapps.artemis.quickfix.QuickFixAddExplicit"
+             problemId="com.baldapps.artemis.checkers.UseExplicitProblem">
+       </resolution>
    </extension>
    <extension
          point="org.eclipse.cdt.codan.core.checkers">
@@ -871,5 +875,20 @@
                name="%problem.name.ClassFieldsCopiedProblem">
          </problem>
       </checker>
+      <checker
+            class="com.baldapps.artemis.checkers.ExplicitChecker"
+            id="com.baldapps.artemis.checkers.ExplicitChecker"
+            name="%checker.name.ExplicitChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.UseExplicitProblem"
+               id="com.baldapps.artemis.checkers.UseExplicitProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.UseExplicitProblem"
+               name="%problem.name.UseExplicitProblem">
+         </problem>
+      </checker>     
    </extension>
 </plugin>
