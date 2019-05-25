@@ -107,6 +107,10 @@ public class ReturnChecker extends AbstractAstFunctionChecker {
 			firstFieldReference = null;
 		}
 
+		public ReturnInfo getInfo() {
+			return retType;
+		}
+
 		public void visit(IASTExpression expr) {
 			if (expr instanceof IASTCastExpression) {
 				visit((IASTCastExpression) expr);
@@ -312,7 +316,7 @@ public class ReturnChecker extends AbstractAstFunctionChecker {
 			if (stmt instanceof IASTReturnStatement) {
 				IASTReturnStatement ret = (IASTReturnStatement) stmt;
 				IASTInitializerClause returnValue = ret.getReturnArgument();
-				ReturnTypeKind returnKind = getReturnTypeKind(func);
+				ReturnTypeKind returnKind = getReturnTypeKind(func, analizer.getInfo());
 				if (returnKind == ReturnTypeKind.NonVoid && !isConstructorDestructor(func)) {
 					if (isExplicitReturn(func) && returnValue != null && analizer != null)
 						analizer.visit(ret.getReturnValue());
@@ -364,11 +368,11 @@ public class ReturnChecker extends AbstractAstFunctionChecker {
 	 * @param func the function to check
 	 * @return {@code true} if the function has a non void return type
 	 */
-	private ReturnTypeKind getReturnTypeKind(IASTFunctionDefinition func) {
+	private ReturnTypeKind getReturnTypeKind(IASTFunctionDefinition func, ReturnInfo info) {
 		if (isConstructorDestructor(func))
 			return ReturnTypeKind.Void;
 		IType returnType = getReturnType(func);
-		if (CPPTemplates.isDependentType(returnType)) {
+		if (info.type == RET_TYPE.BY_VALUE && CPPTemplates.isDependentType(returnType)) {
 			// Could instantiate to void or not.
 			// If we care to, we could do some more heuristic analysis.
 			// For example, if C is a class template, `C<T>` will always be non-void,

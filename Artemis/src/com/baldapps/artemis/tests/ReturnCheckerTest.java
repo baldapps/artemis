@@ -153,4 +153,19 @@ public class ReturnCheckerTest extends ArtemisCheckerTestCase {
 		checkNoErrorsOfKind(ReturnChecker.RET_FIELD_FROM_CONST_ID);
 		checkNoErrorsOfKind(ReturnChecker.RET_PRIVATE_FIELD_ID);
 	}
+
+	//	template<class T>
+	//	class Test {
+	//	private:
+	//		T field;
+	//	public:
+	//		T& get() const {
+	//			return field;
+	//		}
+	//	}
+	public void testReturnDepType() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(7, ReturnChecker.RET_FIELD_FROM_CONST_ID);
+		checkErrorLine(7, ReturnChecker.RET_PRIVATE_FIELD_ID);
+	}
 }
