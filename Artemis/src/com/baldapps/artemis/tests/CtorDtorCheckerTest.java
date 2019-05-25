@@ -277,4 +277,22 @@ public class CtorDtorCheckerTest extends ArtemisCheckerTestCase {
 		checkNoErrorsOfKind(ERR_CALL_SUPER);
 	}
 
+	//class Foo {
+	//public:
+	//	Foo() {
+	//		class LocalClass {
+	//			LocalClass() {}
+	//			virtual void foo() {
+	//			}
+	//			void func() {
+	//				foo();
+	//			}
+	//			virtual ~LocalClass() {}
+	//		};
+	//	}
+	//};
+	public void testVirtualMethodLocalClass() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_VIRTUAL_ID);
+	}
 }
