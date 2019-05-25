@@ -26,9 +26,7 @@ import org.eclipse.cdt.core.dom.ast.IASTDefaultStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
-import org.eclipse.cdt.core.dom.ast.IASTMacroExpansionLocation;
 import org.eclipse.cdt.core.dom.ast.IASTName;
-import org.eclipse.cdt.core.dom.ast.IASTNodeLocation;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSwitchStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -65,7 +63,7 @@ public class SwitchCaseChecker extends AbstractIndexAstChecker {
 
 			@Override
 			public int visit(IASTStatement statement) {
-				if (statement instanceof IASTSwitchStatement && !isProducedByMacroExpansion(statement)) {
+				if (statement instanceof IASTSwitchStatement) {
 					IASTExpression controller = ((IASTSwitchStatement) statement).getControllerExpression();
 					IASTStatement bodyStmt = ((IASTSwitchStatement) statement).getBody();
 					IType type = SemanticUtil.getUltimateType(controller.getExpressionType(), true);
@@ -121,18 +119,5 @@ public class SwitchCaseChecker extends AbstractIndexAstChecker {
 				return PROCESS_CONTINUE;
 			}
 		});
-	}
-
-	/**
-	 * Checks if the given statement is a result of macro expansion with a possible
-	 * exception for the trailing semicolon.
-	 *
-	 * @param statement the statement to check.
-	 * @return <code>true</code> if the statement is a result of macro expansion
-	 */
-	private boolean isProducedByMacroExpansion(IASTStatement statement) {
-		IASTNodeLocation[] locations = statement.getNodeLocations();
-		return locations.length > 0 && locations[0] instanceof IASTMacroExpansionLocation
-				&& (locations.length == 1 || locations.length == 2 && locations[1].getNodeLength() == 1);
 	}
 }

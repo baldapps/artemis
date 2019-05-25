@@ -166,4 +166,49 @@ public class SwitchCaseCheckerTest extends ArtemisCheckerTestCase {
 		checkNoErrorsOfKind(MISS_CASE_ID);
 		checkNoErrorsOfKind(MISS_DEFAULT_ID);
 	}
+
+	//enum FRUIT {
+	//	APPLE, PEAR, BANANA
+	//};
+	//int main() {
+	//	FRUIT p = APPLE;
+	//	switch (p)
+	//		break;
+	//	return 0;
+	//}
+	public void testSwitchSingleStatement() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(6, MISS_CASE_ID);
+		checkErrorLine(6, MISS_DEFAULT_ID);
+	}
+
+	//int main() {
+	//	int p = 0;
+	//	switch (p) {
+	//	case 0:
+	//		break;
+	//	}
+	//	return 0;
+	//}
+	public void testSwitchIntNoDefault() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(MISS_CASE_ID);
+		checkErrorLine(3, MISS_DEFAULT_ID);
+	}
+
+	//#define MYSWITCH() \
+	//	switch (p) { \
+	//	case 0: \
+	//		break; \
+	//	}
+	//int main() {
+	//	int p = 0;
+	//	MYSWITCH();
+	//	return 0;
+	//}
+	public void testSwitchInMacro() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(MISS_CASE_ID);
+		checkErrorLine(8, MISS_DEFAULT_ID);
+	}
 }
