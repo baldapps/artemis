@@ -17,7 +17,7 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Global variables in constructor
 * Avoid magic numbers
 * Local variable shadowing
-* Lack of copyright information
+* ~~Lack of copyright information~~ (included now in Eclipse 2019-06, deprecated in Artemis 2.x)
 * Miss copy constructor or assignment operator
 * Static variable in header file
 * Variable without initialization
@@ -25,9 +25,9 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Direct float comparison
 * Miss self check in assignment operator
 * Miss reference return value in assignment operator
-* Goto statement used
-* Miss cases in switch
-* Miss default in switch
+* ~~Goto statement used~~ (included now in Eclipse 2019-06, deprecated in Artemis 2.x)
+* ~~Miss cases in switch~~ (included now in Eclipse 2019-06, deprecated in Artemis 2.x)
+* ~~Miss default in switch~~ (included now in Eclipse 2019-06, deprecated in Artemis 2.x)
 * Returning the address of a local variable
 * Encapsulation violation
 * Operator assign no return this

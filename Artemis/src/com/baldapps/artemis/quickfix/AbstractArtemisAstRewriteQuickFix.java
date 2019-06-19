@@ -18,14 +18,16 @@ import org.eclipse.core.resources.IMarker;
 
 public abstract class AbstractArtemisAstRewriteQuickFix extends AbstractAstRewriteQuickFix {
 
-	protected IASTNode getASTNodeFromPositions(IASTTranslationUnit ast, final int charStart, final int length) {
+	@Override
+	protected IASTNode getASTNodeFromPosition(IASTTranslationUnit ast, final int charStart, final int length) {
 		IASTNode node = ast.getNodeSelector(null).findEnclosingNode(charStart, length);
 		return node;
 	}
 
+	@Override
 	protected IASTNode getASTNodeFromMarker(IMarker marker, IASTTranslationUnit ast) {
 		final int charStart = marker.getAttribute(IMarker.CHAR_START, -1);
 		final int length = marker.getAttribute(IMarker.CHAR_END, -1) - charStart;
-		return getASTNodeFromPositions(ast, charStart, length);
+		return getASTNodeFromPosition(ast, charStart, length);
 	}
 }

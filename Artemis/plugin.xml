@@ -12,14 +12,6 @@
              problemId="com.baldapps.artemis.checkers.PointerResetProblem">
        </resolution>
        <resolution
-             class="com.baldapps.artemis.quickfix.QuickFixAddDefaultSwitch"
-             problemId="com.baldapps.artemis.checkers.MissDefaultProblem">
-       </resolution>
-       <resolution
-             class="com.baldapps.artemis.quickfix.QuickFixAddCaseSwitch"
-             problemId="com.baldapps.artemis.checkers.MissCaseProblem">
-       </resolution>
-       <resolution
              class="com.baldapps.artemis.quickfix.QuickFixImplicitVirtualMethod"
              problemId="com.baldapps.artemis.checkers.ImplicitVirtualProblem">
        </resolution>
@@ -30,22 +22,6 @@
        <resolution
              class="com.baldapps.artemis.quickfix.QuickFixSizeOfParen"
              problemId="com.baldapps.artemis.checkers.SizeofNoParenProblem">
-       </resolution>
-       <resolution
-             class="com.baldapps.artemis.quickfix.QuickFixCppCastStatic"
-             problemId="org.eclipse.cdt.codan.internal.checkers.CStyleCastProblem">
-       </resolution>
-       <resolution
-             class="com.baldapps.artemis.quickfix.QuickFixCppCastDynamic"
-             problemId="org.eclipse.cdt.codan.internal.checkers.CStyleCastProblem">
-       </resolution>
-       <resolution
-             class="com.baldapps.artemis.quickfix.QuickFixCppCastConst"
-             problemId="org.eclipse.cdt.codan.internal.checkers.CStyleCastProblem">
-       </resolution>
-       <resolution
-             class="com.baldapps.artemis.quickfix.QuickFixCppCastReinterpret"
-             problemId="org.eclipse.cdt.codan.internal.checkers.CStyleCastProblem">
        </resolution>
        <resolution
              class="com.baldapps.artemis.quickfix.QuickFixNonVirtualDestructor"
@@ -132,21 +108,6 @@
               name="%problem.name.VariableShadowing">
 	       </problem>
        </checker>
-       <checker
-            class="com.baldapps.artemis.checkers.CopyrightChecker"
-            id="com.baldapps.artemis.checkers.CopyrightChecker"
-            name="%checker.name.CopyrightChecker">
-         <problem
-               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
-               defaultEnabled="false"
-               defaultSeverity="Warning"
-               description="%problem.description.CopyrightProblem"
-               id="com.baldapps.artemis.checkers.CopyrightProblem"
-               markerType="org.eclipse.cdt.codan.core.codanProblem"
-               messagePattern="%problem.messagePattern.CopyrightProblem"
-               name="%problem.name.CopyrightProblem">
-         </problem>
-      </checker>
       <checker
             class="com.baldapps.artemis.checkers.ShallowCopyChecker"
             id="com.baldapps.artemis.checkers.ShallowCopyChecker"
@@ -298,46 +259,6 @@
                markerType="org.eclipse.cdt.codan.core.codanProblem"
                messagePattern="%problem.messagePattern.MissReferenceProblem"
                name="%problem.name.MissReferenceProblem">
-         </problem>
-      </checker>
-      <checker
-            class="com.baldapps.artemis.checkers.GotoStatementChecker"
-            id="com.baldapps.artemis.checkers.GotoStatementChecker"
-            name="%checker.name.GotoStatementChecker">
-         <problem
-               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
-               defaultEnabled="false"
-               defaultSeverity="Warning"
-               description="%problem.description.GotoStatementProblem"
-               id="com.baldapps.artemis.checkers.GotoStatementProblem"
-               markerType="org.eclipse.cdt.codan.core.codanProblem"
-               messagePattern="%problem.messagePattern.GotoStatementProblem"
-               name="%problem.name.GotoStatementProblem">
-         </problem>
-      </checker>
-      <checker
-            class="com.baldapps.artemis.checkers.SwitchCaseChecker"
-            id="com.baldapps.artemis.checkers.SwitchCaseChecker"
-            name="%checker.name.SwitchCaseChecker">
-         <problem
-               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
-               defaultEnabled="false"
-               defaultSeverity="Warning"
-               description="%problem.description.MissCaseProblem"
-               id="com.baldapps.artemis.checkers.MissCaseProblem"
-               markerType="org.eclipse.cdt.codan.core.codanProblem"
-               messagePattern="%problem.messagePattern.MissCaseProblem"
-               name="%problem.name.MissCaseProblem">
-         </problem>
-         <problem
-               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
-               defaultEnabled="false"
-               defaultSeverity="Warning"
-               description="%problem.description.MissDefaultProblem"
-               id="com.baldapps.artemis.checkers.MissDefaultProblem"
-               markerType="org.eclipse.cdt.codan.core.codanProblem"
-               messagePattern="%problem.messagePattern.MissDefaultProblem"
-               name="%problem.name.MissDefaultProblem">
          </problem>
       </checker>
       <checker
