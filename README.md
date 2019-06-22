@@ -12,7 +12,7 @@ Artemis is fully integrated with Eclipse and you don't need other dependency to 
 
 Here a list of all additional checks perfomed by Artemis in real-time.
 
-* Virtual method call in constructor/destructor
+* ~~Virtual method call in constructor/destructor~~ (included now in Eclipse 2019-06, deprecated in Artemis 2.x)
 * Throw exception in destructor
 * Global variables in constructor
 * Avoid magic numbers

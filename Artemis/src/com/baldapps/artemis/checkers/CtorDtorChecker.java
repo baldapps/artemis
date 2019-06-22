@@ -20,11 +20,7 @@ import org.eclipse.cdt.core.dom.ast.EScopeKind;
 import org.eclipse.cdt.core.dom.ast.IASTDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
-import org.eclipse.cdt.core.dom.ast.IASTFieldReference;
-import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
-import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
@@ -38,15 +34,12 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPConstructor;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMethod;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPVariable;
 import org.eclipse.cdt.internal.core.dom.parser.ASTQueries;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.ClassTypeHelper;
 import org.eclipse.cdt.internal.core.model.ASTStringUtil;
 
 import com.baldapps.artemis.utils.ClassUtils;
-import com.baldapps.artemis.utils.SemanticUtils;
 
 @SuppressWarnings("restriction")
 public class CtorDtorChecker extends AbstractIndexAstChecker {
-	public static final String VIRTUAL_CALL_ID = "com.baldapps.artemis.checkers.VirtualMethodCallProblem"; //$NON-NLS-1$
 	public static final String THROW_ID = "com.baldapps.artemis.checkers.ThrowInDestructorProblem"; //$NON-NLS-1$
 	public static final String GLOBALS_ID = "com.baldapps.artemis.checkers.GlobalsInCtorProblem"; //$NON-NLS-1$
 	public static final String CALL_SUPER_CTOR_ID = "com.baldapps.artemis.checkers.CallSuperCtorProblem"; //$NON-NLS-1$
@@ -119,27 +112,6 @@ public class CtorDtorChecker extends AbstractIndexAstChecker {
 				DECL_TYPE t = ctorDtorStack.peek();
 				if (t == DECL_TYPE.OTHER)
 					return PROCESS_CONTINUE;
-				if (expression instanceof IASTFunctionCallExpression) {
-					IASTFunctionCallExpression fCall = (IASTFunctionCallExpression) expression;
-					IASTExpression fNameExp = fCall.getFunctionNameExpression();
-					IBinding fBinding = null;
-					IASTNode problemNode = expression;
-					if (fNameExp instanceof IASTIdExpression) {
-						IASTIdExpression fName = (IASTIdExpression) fNameExp;
-						fBinding = fName.getName().resolveBinding();
-					} else if (fNameExp instanceof IASTFieldReference) {
-						IASTFieldReference fName = (IASTFieldReference) fNameExp;
-						problemNode = fName.getFieldName();
-						if (SemanticUtils.referencesThis(fName.getFieldOwner()))
-							fBinding = fName.getFieldName().resolveBinding();
-					}
-					if (fBinding != null && fBinding instanceof ICPPMethod) {
-						ICPPMethod method = (ICPPMethod) fBinding;
-						if (method.isPureVirtual() || ClassTypeHelper.isVirtual(method)) {
-							reportProblem(VIRTUAL_CALL_ID, problemNode);
-						}
-					}
-				}
 				if (t == DECL_TYPE.DTOR) {
 					if (expression instanceof IASTUnaryExpression) {
 						if (((IASTUnaryExpression) expression).getOperator() == IASTUnaryExpression.op_throw) {

@@ -42,16 +42,6 @@
                category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
                defaultEnabled="false"
                defaultSeverity="Error"
-               description="%problem.description.VirtualMethodCallProblem"
-               id="com.baldapps.artemis.checkers.VirtualMethodCallProblem"
-               markerType="org.eclipse.cdt.codan.core.codanProblem"
-               messagePattern="%problem.messagePattern.VirtualMethodCallProblem"
-               name="%problem.name.VirtualMethodCallProblem">
-         </problem>
-         <problem
-               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
-               defaultEnabled="false"
-               defaultSeverity="Error"
                description="%problem.description.ThrowInDestructorProblem"
                id="com.baldapps.artemis.checkers.ThrowInDestructorProblem"
                markerType="org.eclipse.cdt.codan.core.codanProblem"
