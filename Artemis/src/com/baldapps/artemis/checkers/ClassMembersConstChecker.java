@@ -27,11 +27,14 @@ import org.eclipse.cdt.core.dom.ast.IASTFieldReference;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTPointerOperator;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IField;
+import org.eclipse.cdt.core.dom.ast.IProblemBinding;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTReferenceOperator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPConstructor;
@@ -95,6 +98,10 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 			public CheckerMode checkerMode;
 			public boolean classMembersAreUsed;
 			public boolean classMembersAreWritten;
+			public boolean hasProblems;
+			public Boolean isVirtual;
+			public boolean isOverloadedOperator;
+			public boolean returnNoConstRef;
 
 			public ContextInfo(ICPPClassType classType) {
 				for (IField field : classType.getFields()) {
@@ -107,8 +114,14 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 				}
 			}
 
-			public void setMethodInfo(ICPPMethod classMethod) {
+			public void setMethodInfo(ICPPASTFunctionDefinition functionDefinition, ICPPMethod classMethod) {
 				method = classMethod;
+				returnNoConstRef = false;
+				IASTPointerOperator[] ptr = functionDefinition.getDeclarator().getPointerOperators();
+				if (ptr.length > 0 && ptr[0] instanceof ICPPASTReferenceOperator) {
+					returnNoConstRef = !functionDefinition.getDeclSpecifier().isConst();
+				}
+				isOverloadedOperator = isOverloadedOperator(classMethod.getName());
 				if (method.isStatic()) {
 					checkerMode = CheckerMode.MODE_STATIC;
 				} else if (method.getType().isConst()) {
@@ -118,15 +131,21 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 				}
 				classMembersAreUsed = false;
 				classMembersAreWritten = false;
+				hasProblems = false;
+				isVirtual = null;
 			}
 
 			public boolean isClassField(IASTName name) {
 				IBinding binding = name.resolveBinding();
+				if (binding instanceof IProblemBinding)
+					hasProblems = true;
 				return classFields.contains(binding);
 			}
 
 			public boolean isClassMethod(IASTName name) {
 				IBinding binding = name.resolveBinding();
+				if (binding instanceof IProblemBinding)
+					hasProblems = true;
 				// To handle recursive call properly, make comparison with self too
 				return binding != method && classMethods.contains(binding);
 			}
@@ -152,7 +171,7 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 					ContextInfo contextInfo = (lastCachedContextInfo != null
 							&& currentClass == lastCachedContextInfo.method.getClassOwner()) ? lastCachedContextInfo
 									: new ContextInfo(currentClass);
-					contextInfo.setMethodInfo(method);
+					contextInfo.setMethodInfo((ICPPASTFunctionDefinition) declaration, method);
 					methodsStack.push(contextInfo);
 				}
 			}
@@ -207,17 +226,27 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 		public int leave(IASTDeclaration declaration) {
 			if (getClassMethod(declaration) != null) {
 				ContextInfo currentContext = methodsStack.peek();
+				if (currentContext.hasProblems) {
+					lastCachedContextInfo = methodsStack.pop();
+					return PROCESS_CONTINUE;
+				}
 				switch (currentContext.checkerMode) {
 				case MODE_CONST:
-					if (!currentContext.classMembersAreUsed && !isVirtual(currentContext.method)) {
-						reportProblem(ER_ID_MethodShouldBeStatic, declaration, currentContext.method.getName());
+					if (!currentContext.classMembersAreUsed && !isVirtual(currentContext)
+							&& !currentContext.isOverloadedOperator) {
+						reportProblem(ER_ID_MethodShouldBeStatic, getMethodName(declaration),
+								currentContext.method.getName());
 					}
 					break;
 				case MODE_NON_CONST:
-					if (!currentContext.classMembersAreUsed && !isVirtual(currentContext.method)) {
-						reportProblem(ER_ID_MethodShouldBeStatic, declaration, currentContext.method.getName());
-					} else if (!currentContext.classMembersAreWritten && !isVirtual(currentContext.method)) {
-						reportProblem(ER_ID_MethodShouldBeConst, declaration, currentContext.method.getName());
+					if (!currentContext.classMembersAreUsed && !isVirtual(currentContext)
+							&& !currentContext.isOverloadedOperator) {
+						reportProblem(ER_ID_MethodShouldBeStatic, getMethodName(declaration),
+								currentContext.method.getName());
+					} else if (!currentContext.classMembersAreWritten && !currentContext.returnNoConstRef
+							&& !isVirtual(currentContext)) {
+						reportProblem(ER_ID_MethodShouldBeConst, getMethodName(declaration),
+								currentContext.method.getName());
 					}
 					break;
 				case MODE_STATIC:
@@ -274,8 +303,7 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 		}
 
 		private boolean isWrittenToNonMutable(IASTName name) {
-			int flags = CPPVariableReadWriteFlags.getReadWriteFlags(name);
-			if ((flags & PDOMName.WRITE_ACCESS) != 0 && (flags & PDOMName.READ_ACCESS) == 0) {
+			if ((CPPVariableReadWriteFlags.getReadWriteFlags(name) & PDOMName.WRITE_ACCESS) != 0) {
 				IBinding binding = name.resolveBinding();
 				if (binding instanceof ICPPField) {
 					return !((ICPPField) binding).isMutable();
@@ -295,6 +323,8 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 		private ICPPMethod getClassMethod(IASTDeclaration decl) {
 			if (decl instanceof ICPPASTFunctionDefinition) {
 				ICPPASTFunctionDefinition functionDefinition = (ICPPASTFunctionDefinition) decl;
+				if (functionDefinition.isDefaulted() || functionDefinition.isDeleted())
+					return null;
 				IBinding binding = functionDefinition.getDeclarator().getName().resolveBinding();
 				if (binding instanceof ICPPMethod) {
 					ICPPMethod method = (ICPPMethod) binding;
@@ -307,12 +337,24 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 			return null;
 		}
 
+		private IASTName getMethodName(IASTDeclaration decl) {
+			if (decl instanceof ICPPASTFunctionDefinition) {
+				ICPPASTFunctionDefinition functionDefinition = (ICPPASTFunctionDefinition) decl;
+				IASTName name = functionDefinition.getDeclarator().getName();
+				return name;
+			}
+			return null;
+		}
+
 		private boolean shouldBeChecked(ICPPMethod method) {
 			return !method.isDestructor() && !(method instanceof ICPPConstructor);
 		}
 
-		private boolean isVirtual(ICPPMethod method) {
-			return ClassTypeHelper.isVirtual(method);
+		private boolean isVirtual(ContextInfo info) {
+			if (info.isVirtual == null) {
+				info.isVirtual = ClassTypeHelper.isVirtual(info.method);
+			}
+			return info.isVirtual;
 		}
 
 		/**
@@ -332,6 +374,38 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 				case IASTUnaryExpression.op_bracketedPrimary:
 					return referencesThis(unExpr.getOperand());
 				}
+			}
+			return false;
+		}
+
+		private boolean isOperatorChar(char ch) {
+			switch (ch) {
+			case '&':
+			case '|':
+			case '+':
+			case '-':
+			case '!':
+			case '=':
+			case '>':
+			case '<':
+			case '%':
+			case '^':
+			case '(':
+			case ')':
+			case '[':
+			case '~':
+				return true;
+			default:
+				return false;
+			}
+		}
+
+		private boolean isOverloadedOperator(String name) {
+			if (!name.startsWith("operator")) //$NON-NLS-1$
+				return false;
+			int operatorCharIndex = 9; // "operator" is 8 characters + 1 for the space used in internal CDT formats
+			if (operatorCharIndex < name.length() && isOperatorChar(name.charAt(operatorCharIndex))) {
+				return true;
 			}
 			return false;
 		}

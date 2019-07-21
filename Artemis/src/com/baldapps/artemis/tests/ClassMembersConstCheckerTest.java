@@ -133,6 +133,7 @@ public class ClassMembersConstCheckerTest extends ArtemisCheckerTestCase {
 	//   void fNonConst()  { i = 0; fNonConst(); }     // No warnings.
 	//   void f2Const() const;
 	//   void f2NonConst();
+	//	 static void staticRecursive(int i) { i--; staticRecursive(i); } // No warnings.
 	// };
 	// void C::f2Const() const { int v = i; f2Const(); }  // No warnings.
 	// void C::f2NonConst()  { i = 0; f2NonConst(); }     // No warnings.
@@ -163,8 +164,9 @@ public class ClassMembersConstCheckerTest extends ArtemisCheckerTestCase {
 	//   virtual void fMethod() = 0;
 	// };
 	// class C : public Base {
+	//	 void test();
 	//   void fField()  { int v = i; }    // No warnings.
-	//   void fMethod() { testConst(); }  // No warnings.
+	//   void fMethod() { test(); }  // No warnings.
 	// };
 	public void testNoWarningOnVirtualMethods() throws Exception {
 		loadCodeAndRun(getAboveComment());
@@ -377,6 +379,46 @@ public class ClassMembersConstCheckerTest extends ArtemisCheckerTestCase {
 	//	}
 	//};
 	public void testWithConstCast() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ClassMembersConstChecker.ER_ID_MemberCannotBeUsedInStatic);
+		checkNoErrorsOfKind(ClassMembersConstChecker.ER_ID_MemberCannotBeWritten);
+		checkNoErrorsOfKind(ClassMembersConstChecker.ER_ID_MethodShouldBeStatic);
+		checkNoErrorsOfKind(ClassMembersConstChecker.ER_ID_MethodShouldBeConst);
+	}
+
+	//struct A {
+	//	A& operator=(const A&) = delete;
+	//	A& operator=(A&&) = default;
+	//;
+	public void testWithDeleteDefault() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ClassMembersConstChecker.ER_ID_MemberCannotBeUsedInStatic);
+		checkNoErrorsOfKind(ClassMembersConstChecker.ER_ID_MemberCannotBeWritten);
+		checkNoErrorsOfKind(ClassMembersConstChecker.ER_ID_MethodShouldBeStatic);
+		checkNoErrorsOfKind(ClassMembersConstChecker.ER_ID_MethodShouldBeConst);
+	}
+
+	//struct A {
+	//	template <typename T>
+	//	T operator()(T t) {
+	//		return t;
+	//	}
+	//};
+	public void testWithOverloadMethod() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ClassMembersConstChecker.ER_ID_MemberCannotBeUsedInStatic);
+		checkNoErrorsOfKind(ClassMembersConstChecker.ER_ID_MemberCannotBeWritten);
+		checkNoErrorsOfKind(ClassMembersConstChecker.ER_ID_MethodShouldBeStatic);
+		checkErrorLine(3, ClassMembersConstChecker.ER_ID_MethodShouldBeConst);
+	}
+
+	//struct B {
+	//    int member;
+	//    int& get_member_ref() {
+	//        return member;
+	//    }
+	//};
+	public void testWithReturnByNoConstRef() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(ClassMembersConstChecker.ER_ID_MemberCannotBeUsedInStatic);
 		checkNoErrorsOfKind(ClassMembersConstChecker.ER_ID_MemberCannotBeWritten);

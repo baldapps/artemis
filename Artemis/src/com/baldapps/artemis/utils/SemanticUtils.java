@@ -12,6 +12,7 @@
 package com.baldapps.artemis.utils;
 
 import static org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil.CVTYPE;
+import static org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil.REF;
 import static org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil.TDEF;
 
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
@@ -22,6 +23,7 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassTemplate;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPFunction;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPFunctionTemplate;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMethod;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPReferenceType;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.ICPPDeferredClassInstance;
@@ -58,19 +60,21 @@ public class SemanticUtils {
 	private static boolean isAssignmentOperator(ICPPMethod method, CopyOrMoveOperatorKind kind) {
 		if (!OPERATOR_ASSIGN.equals(method.getName()))
 			return false;
+		if (method instanceof ICPPFunctionTemplate)
+			return false;
 		if (!isCallableWithNumberOfArguments(method, 1))
 			return false;
 		IType firstArgumentType = method.getType().getParameterTypes()[0];
 		firstArgumentType = SemanticUtil.getNestedType(firstArgumentType, TDEF);
-		if (!(firstArgumentType instanceof ICPPReferenceType))
+		if (!(firstArgumentType instanceof ICPPReferenceType) && kind == CopyOrMoveOperatorKind.MOVE)
 			return false;
-		if (kind == CopyOrMoveOperatorKind.MOVE && !((ICPPReferenceType) firstArgumentType).isRValueReference())
-			return false;
-		if (kind == CopyOrMoveOperatorKind.COPY && ((ICPPReferenceType) firstArgumentType).isRValueReference())
-			return false;
-		ICPPReferenceType firstArgReferenceType = (ICPPReferenceType) firstArgumentType;
-		firstArgumentType = firstArgReferenceType.getType();
-		firstArgumentType = SemanticUtil.getNestedType(firstArgumentType, CVTYPE);
+		if (firstArgumentType instanceof ICPPReferenceType) {
+			if (kind == CopyOrMoveOperatorKind.MOVE && !((ICPPReferenceType) firstArgumentType).isRValueReference())
+				return false;
+			if (kind == CopyOrMoveOperatorKind.COPY && ((ICPPReferenceType) firstArgumentType).isRValueReference())
+				return false;
+		}
+		firstArgumentType = SemanticUtil.getNestedType(firstArgumentType, REF | CVTYPE);
 		ICPPClassType classType = method.getClassOwner();
 		if (classType instanceof ICPPClassTemplate)
 			classType = CPPTemplates.createDeferredInstance((ICPPClassTemplate) classType);

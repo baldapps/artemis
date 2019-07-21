@@ -12,6 +12,7 @@
 package com.baldapps.artemis.checkers;
 
 import java.util.Arrays;
+import java.util.Stack;
 
 import org.eclipse.cdt.codan.core.cxx.model.AbstractIndexAstChecker;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
@@ -20,6 +21,7 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
+import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPointerOperator;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -44,9 +46,13 @@ public class AssignmentOperatorChecker extends AbstractIndexAstChecker {
 		ast.accept(new OnEachClass());
 	}
 
+	private static class OperatorEqInfo {
+		IASTDeclarator decl;
+		ICPPASTParameterDeclaration[] parameters;
+	}
+
 	class OnEachClass extends ASTVisitor {
-		private IASTDeclaration decl;
-		private ICPPASTParameterDeclaration[] parameters;
+		private final Stack<OperatorEqInfo> opInfo = new Stack<>();
 
 		OnEachClass() {
 			shouldVisitDeclarations = true;
@@ -57,69 +63,72 @@ public class AssignmentOperatorChecker extends AbstractIndexAstChecker {
 		public int visit(IASTDeclaration declaration) {
 			ICPPMethod method = getOperatorEq(declaration);
 			if (method != null) {
+				OperatorEqInfo info = opInfo.push(new OperatorEqInfo());
 				IASTDeclarator declMethod = ((ICPPASTFunctionDefinition) declaration).getDeclarator();
 				if (!(declMethod instanceof ICPPASTFunctionDeclarator))
-					return PROCESS_SKIP;
+					return PROCESS_CONTINUE;
+				if (((ICPPASTFunctionDefinition) declaration).isDefaulted()
+						|| ((ICPPASTFunctionDefinition) declaration).isDeleted())
+					return PROCESS_CONTINUE;
 				IASTPointerOperator[] pointers = declMethod.getPointerOperators();
-				parameters = ((ICPPASTFunctionDeclarator) declMethod).getParameters();
+				info.parameters = ((ICPPASTFunctionDeclarator) declMethod).getParameters();
 				if (pointers.length != 1 || !(pointers[0] instanceof ICPPASTReferenceOperator))
 					reportProblem(MISS_REF_ID, declaration);
 
 				if (!SemanticUtils.isCopyOrMoveAssignmentOperator(method))
-					return PROCESS_SKIP;
+					return PROCESS_CONTINUE;
 
-				decl = declaration;
-				return PROCESS_CONTINUE;
-			} else
-				return PROCESS_SKIP;
+				info.decl = declMethod;
+			}
+			return PROCESS_CONTINUE;
 		}
 
 		@Override
 		public int leave(IASTDeclaration declaration) {
-			if (getOperatorEq(declaration) != null) {
-				decl = null;
+			if (getOperatorEq(declaration) != null && !opInfo.isEmpty()) {
+				opInfo.pop();
 			}
 			return PROCESS_CONTINUE;
 		}
 
 		@Override
 		public int visit(IASTExpression expression) {
-			if (decl == null)
-				return PROCESS_SKIP;
-			if (expression instanceof IASTBinaryExpression) {
-				IASTBinaryExpression binary = (IASTBinaryExpression) expression;
-				if ((binary.getOperator() == IASTBinaryExpression.op_equals
-						|| binary.getOperator() == IASTBinaryExpression.op_notequals)) {
-					if (SemanticUtils.referencesThis(binary.getOperand1())
-							&& referencesParameter(binary.getOperand2())) {
-						decl = null;
-						return PROCESS_SKIP;
-					} else if (SemanticUtils.referencesThis(binary.getOperand2())
-							&& referencesParameter(binary.getOperand1())) {
-						decl = null;
-						return PROCESS_SKIP;
+			if (!opInfo.isEmpty()) {
+				OperatorEqInfo info = opInfo.peek();
+				if (info.decl == null)
+					return PROCESS_CONTINUE;
+				if (expression instanceof IASTBinaryExpression) {
+					IASTBinaryExpression binary = (IASTBinaryExpression) expression;
+					if ((binary.getOperator() == IASTBinaryExpression.op_equals
+							|| binary.getOperator() == IASTBinaryExpression.op_notequals)) {
+						if (referencesThis(binary.getOperand1()) && referencesParameter(info, binary.getOperand2())) {
+							info.decl = null;
+						} else if (referencesThis(binary.getOperand2())
+								&& referencesParameter(info, binary.getOperand1())) {
+							info.decl = null;
+						} else {
+							reportProblem(MISS_SELF_CHECK_ID, info.decl);
+						}
 					} else {
-						reportProblem(MISS_SELF_CHECK_ID, decl);
+						reportProblem(MISS_SELF_CHECK_ID, info.decl);
 					}
+					info.decl = null;
 				} else {
-					reportProblem(MISS_SELF_CHECK_ID, decl);
+					reportProblem(MISS_SELF_CHECK_ID, info.decl);
+					info.decl = null;
 				}
-				decl = null;
-				return PROCESS_SKIP;
-			} else {
-				reportProblem(MISS_SELF_CHECK_ID, decl);
-				decl = null;
-				return PROCESS_SKIP;
 			}
+			return PROCESS_CONTINUE;
 		}
 
 		/**
 		 * Checks whether expression references the parameter (directly, by pointer or by reference)
 		 */
-		public boolean referencesParameter(IASTNode expr) {
+		public boolean referencesParameter(OperatorEqInfo info, IASTNode expr) {
 			if (expr instanceof IASTIdExpression) {
 				IASTIdExpression id = (IASTIdExpression) expr;
-				if (Arrays.equals(id.getName().getSimpleID(), parameters[0].getDeclarator().getName().getSimpleID())) {
+				if (Arrays.equals(id.getName().getSimpleID(),
+						info.parameters[0].getDeclarator().getName().getSimpleID())) {
 					return true;
 				}
 			} else if (expr instanceof ICPPASTUnaryExpression) {
@@ -128,7 +137,28 @@ public class AssignmentOperatorChecker extends AbstractIndexAstChecker {
 				case IASTUnaryExpression.op_amper:
 				case IASTUnaryExpression.op_star:
 				case IASTUnaryExpression.op_bracketedPrimary:
-					return referencesParameter(unExpr.getOperand());
+					return referencesParameter(info, unExpr.getOperand());
+				}
+			}
+			return false;
+		}
+
+		/**
+		 * Checks whether expression references this (directly, by pointer or by reference)
+		 */
+		public boolean referencesThis(IASTNode expr) {
+			if (expr instanceof IASTLiteralExpression) {
+				IASTLiteralExpression litArg = (IASTLiteralExpression) expr;
+				if (litArg.getKind() == IASTLiteralExpression.lk_this) {
+					return true;
+				}
+			} else if (expr instanceof ICPPASTUnaryExpression) {
+				ICPPASTUnaryExpression unExpr = (ICPPASTUnaryExpression) expr;
+				switch (unExpr.getOperator()) {
+				case IASTUnaryExpression.op_amper:
+				case IASTUnaryExpression.op_star:
+				case IASTUnaryExpression.op_bracketedPrimary:
+					return referencesThis(unExpr.getOperand());
 				}
 			}
 			return false;

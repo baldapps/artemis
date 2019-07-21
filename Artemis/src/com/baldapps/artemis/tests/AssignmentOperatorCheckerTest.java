@@ -12,7 +12,6 @@ package com.baldapps.artemis.tests;
 
 import com.baldapps.artemis.checkers.AssignmentOperatorChecker;
 
-
 /**
  * Test for {@link AssignmentOperatorChecker} class
  */
@@ -57,7 +56,23 @@ public class AssignmentOperatorCheckerTest extends ArtemisCheckerTestCase {
 	//    }
 	//    return *this;
 	//}
-	public void testWithReturnByCopy() throws Exception {
+	public void testWithReturnByCopyPassByRef() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(5, MISS_REF_ID);
+		checkNoErrorsOfKind(MISS_SELF_ID);
+	}
+
+	//class Foo {
+	//public:
+	//Foo operator=(Foo f);
+	//};
+	//Foo Foo::operator=(Foo f) {
+	//    if (this != &f) {
+	//        return *this;
+	//    }
+	//    return *this;
+	//}
+	public void testWithReturnByCopyPassByValue() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLine(5, MISS_REF_ID);
 		checkNoErrorsOfKind(MISS_SELF_ID);
@@ -70,7 +85,20 @@ public class AssignmentOperatorCheckerTest extends ArtemisCheckerTestCase {
 	//Foo& Foo::operator=(const Foo& f) {
 	//  return *this;
 	//}
-	public void testWithNoSelfCheck() throws Exception {
+	public void testWithNoSelfCheckPassByRef() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(MISS_REF_ID);
+		checkErrorLine(5, MISS_SELF_ID);
+	}
+
+	//class Foo {
+	//public:
+	//Foo& operator=(Foo f);
+	//};
+	//Foo& Foo::operator=(Foo f) {
+	//  return *this;
+	//}
+	public void testWithNoSelfCheckPassByValue() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(MISS_REF_ID);
 		checkErrorLine(5, MISS_SELF_ID);
@@ -110,4 +138,53 @@ public class AssignmentOperatorCheckerTest extends ArtemisCheckerTestCase {
 		checkNoErrorsOfKind(MISS_SELF_ID);
 	}
 
+	//class Foo	{
+	//	Foo& operator=(Foo&) {
+	//		return *this;
+	//	}
+	//};
+	public void testWithInlineOpEq() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(2, MISS_SELF_ID);
+		checkNoErrorsOfKind(MISS_REF_ID);
+	}
+
+	//class Foo	{
+	//	class Bar {
+	//		Bar& operator=(Bar&) {
+	//			return *this;
+	//		}
+	//	}
+	//};
+	public void testWithNestedClasses() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(3, MISS_SELF_ID);
+		checkNoErrorsOfKind(MISS_REF_ID);
+	}
+
+	//class Foo {
+	//	Foo& operator=(Foo& a) {
+	//		class Local {
+	//			Local& operator=(Local& a) {
+	//				return *this;
+	//			}
+	//		};
+	//		return *this;
+	//	}
+	//};
+	public void testWithLocalClass() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(2, MISS_SELF_ID);
+		checkErrorLine(4, MISS_SELF_ID);
+		checkNoErrorsOfKind(MISS_REF_ID);
+	}
+
+	//class Foo	{
+	//	Foo& operator=(Foo&) = delete;
+	//};
+	public void testWithDeletedOpEq() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(MISS_SELF_ID);
+		checkNoErrorsOfKind(MISS_REF_ID);
+	}
 }
