@@ -72,4 +72,44 @@ public class FunctionCheckerTest extends ArtemisCheckerTestCase {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLine(3);
 	}
+
+	//struct Foo {
+	//};
+	//using FooRef = Foo&;
+	//void test(FooRef f) {
+	//}
+	public void testRefIndirectType() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_ID);
+	}
+
+	//struct Foo {
+	//};
+	//using FooPtr = Foo*;
+	//void test(FooPtr f) {
+	//}
+	public void testPtrIndirectType() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_ID);
+	}
+
+	//struct Foo {
+	//};
+	//using FooV = Foo;
+	//void test(FooV f) {
+	//}
+	public void testValueIndirectType() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(4);
+	}
+
+	//struct Foo {
+	//};
+	//using FooV = Foo;
+	//void test(Baz f) {
+	//}
+	public void testProblemBinding() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_ID);
+	}
 }

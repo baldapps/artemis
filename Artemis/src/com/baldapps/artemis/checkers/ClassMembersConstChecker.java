@@ -21,27 +21,30 @@ import org.eclipse.cdt.codan.core.model.CheckerLaunchMode;
 import org.eclipse.cdt.codan.core.model.IProblemWorkingCopy;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBinaryExpression;
+import org.eclipse.cdt.core.dom.ast.IASTCastExpression;
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFieldReference;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
-import org.eclipse.cdt.core.dom.ast.IASTPointerOperator;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IField;
 import org.eclipse.cdt.core.dom.ast.IProblemBinding;
+import org.eclipse.cdt.core.dom.ast.IType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDefinition;
-import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTReferenceOperator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPConstructor;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPField;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMethod;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPReferenceType;
+import org.eclipse.cdt.internal.core.dom.parser.ASTQueries;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.ClassTypeHelper;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.CPPVariableReadWriteFlags;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil;
 import org.eclipse.cdt.internal.core.pdom.dom.PDOMName;
 
 /**
@@ -78,6 +81,10 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 			getLaunchModePreference(problem).setRunningMode(CheckerLaunchMode.RUN_ON_INC_BUILD, false);
 			break;
 		}
+	}
+
+	private enum OpType {
+		READ, WRITE, CAST_WRITE
 	}
 
 	@Override
@@ -117,9 +124,9 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 			public void setMethodInfo(ICPPASTFunctionDefinition functionDefinition, ICPPMethod classMethod) {
 				method = classMethod;
 				returnNoConstRef = false;
-				IASTPointerOperator[] ptr = functionDefinition.getDeclarator().getPointerOperators();
-				if (ptr.length > 0 && ptr[0] instanceof ICPPASTReferenceOperator) {
-					returnNoConstRef = !functionDefinition.getDeclSpecifier().isConst();
+				IType retTyoe = SemanticUtil.getNestedType(method.getType().getReturnType(), SemanticUtil.TDEF);
+				if (retTyoe instanceof ICPPReferenceType && !SemanticUtil.isConst(retTyoe)) {
+					returnNoConstRef = true;
 				}
 				isOverloadedOperator = isOverloadedOperator(classMethod.getName());
 				if (method.isStatic()) {
@@ -270,7 +277,7 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 				case MODE_CONST:
 					if (currentContext.isClassField(name)) {
 						currentContext.classMembersAreUsed = true;
-						if (isWrittenToNonMutable(name)) {
+						if (isWrittenToNonMutable(name) == OpType.WRITE) {
 							reportProblem(ER_ID_MemberCannotBeWritten, name, name.toString(),
 									currentContext.method.getName());
 						}
@@ -281,8 +288,13 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 				case MODE_NON_CONST:
 					if (currentContext.isClassField(name)) {
 						currentContext.classMembersAreUsed = true;
-						if (currentContext.classMembersAreWritten || isWrittenToNonMutable(name)) {
+						if (currentContext.classMembersAreWritten) {
 							currentContext.classMembersAreWritten = true;
+						} else {
+							OpType op = isWrittenToNonMutable(name);
+							if (op == OpType.WRITE || op == OpType.CAST_WRITE) {
+								currentContext.classMembersAreWritten = true;
+							}
 						}
 					} else if (currentContext.isClassMethod(name)) {
 						currentContext.classMembersAreUsed = true;
@@ -302,14 +314,24 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 			return PROCESS_CONTINUE;
 		}
 
-		private boolean isWrittenToNonMutable(IASTName name) {
+		private OpType isWrittenToNonMutable(IASTName name) {
 			if ((CPPVariableReadWriteFlags.getReadWriteFlags(name) & PDOMName.WRITE_ACCESS) != 0) {
+				/*
+				 * If we are writing a field but there's an explicit no-const cast written by the user
+				 * we take it into account and we avoid to consider it a write operation.
+				 */
+				IASTCastExpression cast = ASTQueries.findAncestorWithType(name, IASTCastExpression.class);
+				if (cast != null) {
+					IType type = SemanticUtil.getNestedType(cast.getExpressionType(), SemanticUtil.TDEF);
+					if (!SemanticUtil.isConst(type))
+						return OpType.CAST_WRITE;
+				}
 				IBinding binding = name.resolveBinding();
-				if (binding instanceof ICPPField) {
-					return !((ICPPField) binding).isMutable();
+				if (binding instanceof ICPPField && !((ICPPField) binding).isMutable()) {
+					return OpType.WRITE;
 				}
 			}
-			return false;
+			return OpType.READ;
 		}
 
 		private boolean isNonConstMethod(IASTName name) {

@@ -42,6 +42,7 @@ import org.eclipse.cdt.core.dom.ast.IASTTypeId;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBasicType;
 import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.IFunction;
 import org.eclipse.cdt.core.dom.ast.IParameter;
 import org.eclipse.cdt.core.dom.ast.IPointerType;
 import org.eclipse.cdt.core.dom.ast.IScope;
@@ -271,7 +272,6 @@ public class ReturnChecker extends AbstractAstFunctionChecker {
 			this.func = func;
 			ReturnInfo info = new ReturnInfo();
 			info.mustBeThis = isOpAssign;
-			info.isConst = func.getDeclSpecifier().isConst();
 			IBinding binding = func.getDeclarator().getName().resolveBinding();
 			info.isMethodPublic = false;
 			info.isMethodConst = false;
@@ -282,16 +282,21 @@ public class ReturnChecker extends AbstractAstFunctionChecker {
 			if (func.getDeclarator() instanceof ICPPASTFunctionDeclarator) {
 				info.isMethodConst = ((ICPPASTFunctionDeclarator) func.getDeclarator()).isConst();
 			}
-			IASTPointerOperator[] ptr = func.getDeclarator().getPointerOperators();
-			if (ptr.length > 0 && ptr[0] instanceof ICPPASTReferenceOperator) {
-				info.type = RET_TYPE.BY_REF;
-				analizer = new ReturnTypeAnalizer(info);
-			} else if (ptr.length > 0 && ptr[0] instanceof IASTPointer) {
-				info.type = RET_TYPE.BY_PTR;
-				analizer = new ReturnTypeAnalizer(info);
-			} else if (isOpAssign) {
-				info.type = RET_TYPE.BY_VALUE;
-				analizer = new ReturnTypeAnalizer(info);
+			if (binding instanceof IFunction) {
+				IType retType = SemanticUtil.getNestedType(((IFunction) binding).getType().getReturnType(),
+						SemanticUtil.TDEF);
+				info.isConst = SemanticUtil.isConst(retType);
+				if (retType instanceof ICPPReferenceType) {
+					info.type = RET_TYPE.BY_REF;
+					analizer = new ReturnTypeAnalizer(info);
+				} else if (retType instanceof IPointerType) {
+					info.type = RET_TYPE.BY_PTR;
+					analizer = new ReturnTypeAnalizer(info);
+				} else if (isOpAssign) {
+					info.type = RET_TYPE.BY_VALUE;
+					analizer = new ReturnTypeAnalizer(info);
+				} else
+					analizer = null;
 			} else
 				analizer = null;
 		}
