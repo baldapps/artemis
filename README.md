@@ -23,8 +23,8 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Variable without initialization
 * Multiple variable declaration
 * Direct float comparison
-* Miss self check in assignment operator
-* Miss reference return value in assignment operator
+* ~~Miss self check in assignment operator~~ (included now in Eclipse 2019-09, deprecated in Artemis 2.1.x)
+* ~~Miss reference return value in assignment operator~~ (included now in Eclipse 2019-09, deprecated in Artemis 2.1.x)
 * ~~Goto statement used~~ (included now in Eclipse 2019-06, deprecated in Artemis 2.x)
 * ~~Miss cases in switch~~ (included now in Eclipse 2019-06, deprecated in Artemis 2.x)
 * ~~Miss default in switch~~ (included now in Eclipse 2019-06, deprecated in Artemis 2.x)

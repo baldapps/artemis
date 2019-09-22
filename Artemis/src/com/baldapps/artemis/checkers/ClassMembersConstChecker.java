@@ -83,10 +83,6 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 		}
 	}
 
-	private enum OpType {
-		READ, WRITE, CAST_WRITE
-	}
-
 	@Override
 	public void processAst(IASTTranslationUnit ast) {
 		ast.accept(new OnEachClass());
@@ -277,7 +273,7 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 				case MODE_CONST:
 					if (currentContext.isClassField(name)) {
 						currentContext.classMembersAreUsed = true;
-						if (isWrittenToNonMutable(name) == OpType.WRITE) {
+						if (isWrittenToNonMutable(name)) {
 							reportProblem(ER_ID_MemberCannotBeWritten, name, name.toString(),
 									currentContext.method.getName());
 						}
@@ -291,8 +287,7 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 						if (currentContext.classMembersAreWritten) {
 							currentContext.classMembersAreWritten = true;
 						} else {
-							OpType op = isWrittenToNonMutable(name);
-							if (op == OpType.WRITE || op == OpType.CAST_WRITE) {
+							if (isWrittenToNonMutable(name)) {
 								currentContext.classMembersAreWritten = true;
 							}
 						}
@@ -314,7 +309,7 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 			return PROCESS_CONTINUE;
 		}
 
-		private OpType isWrittenToNonMutable(IASTName name) {
+		private boolean isWrittenToNonMutable(IASTName name) {
 			if ((CPPVariableReadWriteFlags.getReadWriteFlags(name) & PDOMName.WRITE_ACCESS) != 0) {
 				/*
 				 * If we are writing a field but there's an explicit no-const cast written by the user
@@ -324,14 +319,14 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 				if (cast != null) {
 					IType type = SemanticUtil.getNestedType(cast.getExpressionType(), SemanticUtil.TDEF);
 					if (!SemanticUtil.isConst(type))
-						return OpType.CAST_WRITE;
+						return true;
 				}
 				IBinding binding = name.resolveBinding();
 				if (binding instanceof ICPPField && !((ICPPField) binding).isMutable()) {
-					return OpType.WRITE;
+					return true;
 				}
 			}
-			return OpType.READ;
+			return false;
 		}
 
 		private boolean isNonConstMethod(IASTName name) {

@@ -227,31 +227,6 @@
         </problem>
      </checker>
      <checker
-            class="com.baldapps.artemis.checkers.AssignmentOperatorChecker"
-            id="com.baldapps.artemis.checkers.AssignmentOperatorChecker"
-            name="%checker.name.AssignmentOperatorChecker">
-         <problem
-               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
-               defaultEnabled="false"
-               defaultSeverity="Warning"
-               description="%problem.description.MissSelfCheckProblem"
-               id="com.baldapps.artemis.checkers.MissSelfCheckProblem"
-               markerType="org.eclipse.cdt.codan.core.codanProblem"
-               messagePattern="%problem.messagePattern.MissSelfCheckProblem"
-               name="%problem.name.MissSelfCheckProblem">
-         </problem>
-         <problem
-               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
-               defaultEnabled="false"
-               defaultSeverity="Warning"
-               description="%problem.description.MissReferenceProblem"
-               id="com.baldapps.artemis.checkers.MissReferenceProblem"
-               markerType="org.eclipse.cdt.codan.core.codanProblem"
-               messagePattern="%problem.messagePattern.MissReferenceProblem"
-               name="%problem.name.MissReferenceProblem">
-         </problem>
-      </checker>
-      <checker
             class="com.baldapps.artemis.checkers.ReturnChecker"
             id="com.baldapps.artemis.checkers.ReturnChecker"
             name="%checker.name.LocalAddressChecker">
