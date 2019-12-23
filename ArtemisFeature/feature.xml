@@ -2,7 +2,7 @@
 <feature
       id="ArtemisFeature"
       label="Artemis"
-      version="2.1.0.qualifier"
+      version="2.2.0.qualifier"
       provider-name="Marco Stornelli"
       plugin="Artemis">
 
