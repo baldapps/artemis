@@ -13,14 +13,11 @@ package com.baldapps.artemis.checkers;
 
 import java.util.Stack;
 
-import org.eclipse.cdt.codan.checkers.CodanCheckersActivator;
 import org.eclipse.cdt.codan.core.cxx.CxxAstUtils;
 import org.eclipse.cdt.codan.core.cxx.model.AbstractAstFunctionChecker;
 import org.eclipse.cdt.codan.core.model.CheckerLaunchMode;
 import org.eclipse.cdt.codan.core.model.IProblemWorkingCopy;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
-import org.eclipse.cdt.core.dom.ast.DOMException;
-import org.eclipse.cdt.core.dom.ast.EScopeKind;
 import org.eclipse.cdt.core.dom.ast.IASTCastExpression;
 import org.eclipse.cdt.core.dom.ast.IASTConditionalExpression;
 import org.eclipse.cdt.core.dom.ast.IASTDeclSpecifier;
@@ -43,9 +40,7 @@ import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
 import org.eclipse.cdt.core.dom.ast.IBasicType;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IFunction;
-import org.eclipse.cdt.core.dom.ast.IParameter;
 import org.eclipse.cdt.core.dom.ast.IPointerType;
-import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.IType;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDeclarator;
@@ -65,7 +60,6 @@ import org.eclipse.cdt.internal.core.model.ASTStringUtil;
 
 @SuppressWarnings("restriction")
 public class ReturnChecker extends AbstractAstFunctionChecker {
-	public static final String RET_LOCAL_ID = "com.baldapps.artemis.checkers.LocalVarReturn"; //$NON-NLS-1$
 	public static final String RET_PRIVATE_FIELD_ID = "com.baldapps.artemis.checkers.RetPrivateField"; //$NON-NLS-1$
 	public static final String NO_RET_THIS_ID = "com.baldapps.artemis.checkers.NoRetThisOpAssign"; //$NON-NLS-1$
 	public static final String RET_FIELD_FROM_CONST_ID = "com.baldapps.artemis.checkers.RetFieldFromConstMethod"; //$NON-NLS-1$
@@ -160,35 +154,6 @@ public class ReturnChecker extends AbstractAstFunctionChecker {
 
 		private void visit(IASTIdExpression expr) {
 			IBinding binding = expr.getName().resolveBinding();
-			if (binding instanceof IVariable && !(binding instanceof IParameter) && !(binding instanceof ICPPField)) {
-				Integer op = null;
-				if (!innermostOp.empty())
-					op = innermostOp.peek();
-				IType t = ((IVariable) binding).getType();
-				t = SemanticUtil.getNestedType(t, SemanticUtil.TDEF);
-				if (retType.type == RET_TYPE.BY_REF && !(t instanceof ICPPReferenceType)) {
-					if (t instanceof IPointerType && op != null && op == IASTUnaryExpression.op_star) {
-						return;
-					}
-					try {
-						IScope scope = binding.getScope();
-						if (scope.getKind() == EScopeKind.eLocal && !((IVariable) binding).isStatic()) {
-							reportProblem(RET_LOCAL_ID, expr, binding.getName());
-						}
-					} catch (DOMException e) {
-						CodanCheckersActivator.log(e);
-					}
-				} else if (retType.type == RET_TYPE.BY_PTR && op != null && op == IASTUnaryExpression.op_amper) {
-					try {
-						IScope scope = binding.getScope();
-						if (scope.getKind() == EScopeKind.eLocal && !((IVariable) binding).isStatic()) {
-							reportProblem(RET_LOCAL_ID, expr, binding.getName());
-						}
-					} catch (DOMException e) {
-						CodanCheckersActivator.log(e);
-					}
-				}
-			}
 			if (!retType.isConst && binding instanceof ICPPField && retType.type != RET_TYPE.BY_VALUE) {
 				if (retType.type == RET_TYPE.BY_PTR && isPointer((ICPPField) binding)) {
 					return;

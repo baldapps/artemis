@@ -20,7 +20,7 @@ public class ReturnCheckerTest extends ArtemisCheckerTestCase {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		enableProblems(ReturnChecker.RET_LOCAL_ID, ReturnChecker.RET_PRIVATE_FIELD_ID, ReturnChecker.NO_RET_THIS_ID,
+		enableProblems(ReturnChecker.RET_PRIVATE_FIELD_ID, ReturnChecker.NO_RET_THIS_ID,
 				ReturnChecker.RET_FIELD_FROM_CONST_ID);
 	}
 
@@ -90,7 +90,6 @@ public class ReturnCheckerTest extends ArtemisCheckerTestCase {
 	public void testReturnClassField() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLine(6, ReturnChecker.RET_PRIVATE_FIELD_ID);
-		checkNoErrorsOfKind(ReturnChecker.RET_LOCAL_ID);
 	}
 
 	//	class Test {

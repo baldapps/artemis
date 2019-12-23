@@ -19,10 +19,10 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Local variable shadowing
 * ~~Lack of copyright information~~ (included now in Eclipse 2019-06, deprecated in Artemis 2.x)
 * Miss copy constructor or assignment operator
-* Static variable in header file
+* ~~Static variable in header file~~ (included now in Eclipse 2019-12, deprecated in Artemis 2.2.x)
 * Variable without initialization
-* Multiple variable declaration
-* Direct float comparison
+* ~~Multiple variable declaration~~ (included now in Eclipse 2019-12, deprecated in Artemis 2.2.x)
+* ~~Direct float comparison~~ (included now in Eclipse 2019-12, deprecated in Artemis 2.2.x)
 * ~~Miss self check in assignment operator~~ (included now in Eclipse 2019-09, deprecated in Artemis 2.1.x)
 * ~~Miss reference return value in assignment operator~~ (included now in Eclipse 2019-09, deprecated in Artemis 2.1.x)
 * ~~Goto statement used~~ (included now in Eclipse 2019-06, deprecated in Artemis 2.x)
@@ -54,7 +54,7 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Hook to std namespace
 * Float counter in for loop
 * Usage of auto pointer
-* Function or method in blacklist
+* ~~Function or method in blacklist~~ (included now in Eclipse 2019-12, deprecated in Artemis 2.2.x)
 * Memory compare with composite types
 * Wrong use of c_str
 * Miss brace in control statements

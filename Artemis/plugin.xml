@@ -121,31 +121,11 @@
                category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
                defaultEnabled="false"
                defaultSeverity="Warning"
-               description="%problem.description.StaticVariableProblem"
-               id="com.baldapps.artemis.checkers.StaticVariableProblem"
-               markerType="org.eclipse.cdt.codan.core.codanProblem"
-               messagePattern="%problem.messagePattern.StaticVariableProblem"
-               name="%problem.name.StaticVariableProblem">
-         </problem>
-         <problem
-               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
-               defaultEnabled="false"
-               defaultSeverity="Warning"
                description="%problem.description.MissedInitializationProblem"
                id="com.baldapps.artemis.checkers.MissedInitializationProblem"
                markerType="org.eclipse.cdt.codan.core.codanProblem"
                messagePattern="%problem.messagePattern.MissedInitializationProblem"
                name="%problem.name.MissedInitializationProblem">
-         </problem>
-         <problem
-               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
-               defaultEnabled="false"
-               defaultSeverity="Warning"
-               description="%problem.description.MultipleDeclarationsProblem"
-               id="com.baldapps.artemis.checkers.MultipleDeclarationsProblem"
-               markerType="org.eclipse.cdt.codan.core.codanProblem"
-               messagePattern="%problem.messagePattern.MultipleDeclarationsProblem"
-               name="%problem.name.MultipleDeclarationsProblem">
          </problem>
          <problem
                category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
@@ -166,21 +146,6 @@
                markerType="org.eclipse.cdt.codan.core.codanProblem"
                messagePattern="%problem.messagePattern.AvoidGlobalVarsProblem"
                name="%problem.name.AvoidGlobalVarsProblem">
-         </problem>
-      </checker>
-      <checker
-            class="com.baldapps.artemis.checkers.FloatCompareChecker"
-            id="com.baldapps.artemis.checkers.FloatCompareChecker"
-            name="%checker.name.FloatCompareChecker">
-         <problem
-               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
-               defaultEnabled="false"
-               defaultSeverity="Warning"
-               description="%problem.description.FloatCompareProblem"
-               id="com.baldapps.artemis.checkers.FloatCompareProblem"
-               markerType="org.eclipse.cdt.codan.core.codanProblem"
-               messagePattern="%problem.messagePattern.FloatCompareProblem"
-               name="%problem.name.FloatCompareProblem">
          </problem>
       </checker>
       <checker
@@ -230,16 +195,6 @@
             class="com.baldapps.artemis.checkers.ReturnChecker"
             id="com.baldapps.artemis.checkers.ReturnChecker"
             name="%checker.name.LocalAddressChecker">
-         <problem
-               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
-               defaultEnabled="false"
-               defaultSeverity="Warning"
-               description="%problem.description.LocalVarReturn"
-               id="com.baldapps.artemis.checkers.LocalVarReturn"
-               markerType="org.eclipse.cdt.codan.core.codanProblem"
-               messagePattern="%problem.messagePattern.LocalVarReturn"
-               name="%problem.name.LocalVarReturn">
-         </problem>
          <problem
                category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
                defaultEnabled="false"
@@ -534,21 +489,6 @@
                markerType="org.eclipse.cdt.codan.core.codanProblem"
                messagePattern="%problem.messagePattern.AutoPtrProblem"
                name="%problem.name.AutoPtrProblem">
-         </problem>
-      </checker>
-      <checker
-            class="com.baldapps.artemis.checkers.BlacklistChecker"
-            id="com.baldapps.artemis.checkers.BlacklistChecker"
-            name="%checker.name.BlacklistChecker">
-         <problem
-               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
-               defaultEnabled="false"
-               defaultSeverity="Warning"
-               description="%problem.description.BlacklistProblem"
-               id="com.baldapps.artemis.checkers.BlacklistProblem"
-               markerType="org.eclipse.cdt.codan.core.codanProblem"
-               messagePattern="%problem.messagePattern.BlacklistProblem"
-               name="%problem.name.BlacklistProblem">
          </problem>
       </checker>
       <checker

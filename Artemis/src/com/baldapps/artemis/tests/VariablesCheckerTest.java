@@ -17,8 +17,6 @@ import com.baldapps.artemis.checkers.VariablesChecker;
  */
 public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 
-	public static final String STATIC_ID = VariablesChecker.STATIC_VAR_ID;
-	public static final String MULTI_ID = VariablesChecker.VAR_MULTI_DEC_ID;
 	public static final String MISS_INIT_ID = VariablesChecker.VAR_MISS_INIT_ID;
 	public static final String STATIC_MISS_INIT_ID = VariablesChecker.STATIC_VAR_MISS_INIT_ID;
 	public static final String GLOBAL_ID = VariablesChecker.AVOID_GLOBALS_ID;
@@ -27,7 +25,7 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		enableProblems(STATIC_ID, MULTI_ID, MISS_INIT_ID, STATIC_MISS_INIT_ID, GLOBAL_ID);
+		enableProblems(MISS_INIT_ID, STATIC_MISS_INIT_ID, GLOBAL_ID);
 	}
 
 	@Override
@@ -40,12 +38,6 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 		return isHeader;
 	}
 
-	//static int a = 0;
-	public void testStaticVar() throws Exception {
-		loadCodeAndRun(getAboveComment());
-		checkErrorLine(1, STATIC_ID);
-	}
-
 	//void foo() {
 	//    int p;
 	//}
@@ -55,22 +47,12 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 	}
 
 	//void foo() {
-	//    int p = 0, u = 0;
-	//}
-	public void testMultiInitVar() throws Exception {
-		loadCodeAndRun(getAboveComment());
-		checkErrorLine(2, MULTI_ID);
-	}
-
-	//void foo() {
 	//    int p = 0;
 	//    int u = 0;
 	//}
 	public void testCleanVar() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(MISS_INIT_ID);
-		checkNoErrorsOfKind(MULTI_ID);
-		checkNoErrorsOfKind(STATIC_ID);
 	}
 
 	//struct Bar {
@@ -82,8 +64,6 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 	public void testWithStruct() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLine(5, MISS_INIT_ID);
-		checkNoErrorsOfKind(MULTI_ID);
-		checkNoErrorsOfKind(STATIC_ID);
 	}
 
 	//struct Bar {
@@ -96,8 +76,6 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 	public void testWithStructTypedef() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLine(6, MISS_INIT_ID);
-		checkNoErrorsOfKind(MULTI_ID);
-		checkNoErrorsOfKind(STATIC_ID);
 	}
 
 	//struct Bar {
@@ -110,8 +88,6 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 	public void testWithStructCtor() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(MISS_INIT_ID);
-		checkNoErrorsOfKind(MULTI_ID);
-		checkNoErrorsOfKind(STATIC_ID);
 	}
 
 	//struct Bar {
@@ -123,8 +99,6 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 	public void testWithInitStruct() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(MISS_INIT_ID);
-		checkNoErrorsOfKind(MULTI_ID);
-		checkNoErrorsOfKind(STATIC_ID);
 	}
 
 	//union Bar {
@@ -137,8 +111,6 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 	public void testWithUnionCtor() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(MISS_INIT_ID);
-		checkNoErrorsOfKind(MULTI_ID);
-		checkNoErrorsOfKind(STATIC_ID);
 	}
 
 	//union Bar {
@@ -150,8 +122,6 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 	public void testWithUnion() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLine(5, MISS_INIT_ID);
-		checkNoErrorsOfKind(MULTI_ID);
-		checkNoErrorsOfKind(STATIC_ID);
 	}
 
 	//union Bar {
@@ -163,8 +133,6 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 	public void testWithInitUnion() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(MISS_INIT_ID);
-		checkNoErrorsOfKind(MULTI_ID);
-		checkNoErrorsOfKind(STATIC_ID);
 	}
 
 	//class Bar {
@@ -177,8 +145,6 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 	public void testWithClass() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(MISS_INIT_ID);
-		checkNoErrorsOfKind(MULTI_ID);
-		checkNoErrorsOfKind(STATIC_ID);
 	}
 
 	//int foo() {
@@ -190,8 +156,6 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 	public void testWithTryCatch() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(MISS_INIT_ID);
-		checkNoErrorsOfKind(MULTI_ID);
-		checkNoErrorsOfKind(STATIC_ID);
 	}
 
 	//class Test {
@@ -203,8 +167,6 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 		isHeader = false;
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(MISS_INIT_ID);
-		checkNoErrorsOfKind(MULTI_ID);
-		checkNoErrorsOfKind(STATIC_ID);
 		checkErrorLine(5, STATIC_MISS_INIT_ID);
 	}
 
@@ -212,8 +174,6 @@ public class VariablesCheckerTest extends ArtemisCheckerTestCase {
 	public void testGlobalVariable() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(MISS_INIT_ID);
-		checkNoErrorsOfKind(MULTI_ID);
-		checkNoErrorsOfKind(STATIC_ID);
 		checkErrorLine(1, GLOBAL_ID);
 	}
 }
