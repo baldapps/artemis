@@ -12,9 +12,11 @@ package com.baldapps.artemis.checkers;
 
 import org.eclipse.cdt.codan.core.cxx.model.AbstractIndexAstChecker;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamespaceDefinition;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateSpecialization;
 import org.eclipse.cdt.core.parser.util.CharArrayUtils;
 
 public class NamespaceChecker extends AbstractIndexAstChecker {
@@ -31,8 +33,16 @@ public class NamespaceChecker extends AbstractIndexAstChecker {
 			public int visit(ICPPASTNamespaceDefinition declaration) {
 				IASTName name = declaration.getName();
 				if (CharArrayUtils.equals(name.getSimpleID(), "std".toCharArray())) {
-					reportProblem(STD_NAMESPACE_ID, declaration);
-					return PROCESS_SKIP;
+					IASTDeclaration[] decls = declaration.getDeclarations();
+					if (decls == null || decls.length == 0) {
+						return PROCESS_SKIP;
+					}
+					for (IASTDeclaration d : decls) {
+						if (!(d instanceof ICPPASTTemplateSpecialization)) {
+							reportProblem(STD_NAMESPACE_ID, declaration);
+							return PROCESS_SKIP;
+						}
+					}
 				}
 				return PROCESS_CONTINUE;
 			}

@@ -46,4 +46,26 @@ public class NamespaceCheckerTest extends ArtemisCheckerTestCase {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(ERR_ID);
 	}
+
+	//namespace std::chrono {
+	//	int a;
+	//}
+	public void testNestedStd() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(1, ERR_ID);
+	}
+
+	//class MyType {};
+	//namespace std {
+	//  template <> 
+	//  struct std::hash<MyType> {
+	//     std::size_t operator()(const MyType& t) const {
+	//        return 0; 
+	//     }
+	//  };
+	//}
+	public void testTemplateSpec() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_ID);
+	}
 }
