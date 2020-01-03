@@ -450,6 +450,16 @@
                messagePattern="%problem.messagePattern.StdNamespaceProblem"
                name="%problem.name.StdNamespaceProblem">
          </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Info"
+               description="%problem.description.NamespaceNameProblem"
+               id="com.baldapps.artemis.checkers.NamespaceNameProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.NamespaceNameProblem"
+               name="%problem.name.NamespaceNameProblem">
+         </problem>
       </checker>
       <checker
             class="com.baldapps.artemis.checkers.ForLoopChecker"

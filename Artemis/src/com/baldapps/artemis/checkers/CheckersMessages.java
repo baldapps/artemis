@@ -31,6 +31,7 @@ public class CheckersMessages extends NLS {
 	public static String BlacklistChecker_list_item;
 	public static String ClassMembersCopiedChecker_SkipMethodWithFCalls;
 	public static String ExplicitChecker_IncludeConversionOperators;
+	public static String NamingConventionClassesChecker_NamespaceLabelNamePattern;
 	static {
 		NLS.initializeMessages(CheckersMessages.class.getName(), CheckersMessages.class);
 	}
