@@ -350,6 +350,16 @@
                messagePattern="%problem.messagePattern.EmptyThrowProblem"
                name="%problem.name.EmptyThrowProblem">
          </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.CatchNoStdProblem"
+               id="com.baldapps.artemis.checkers.CatchNoStdProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.CatchNoStdProblem"
+               name="%problem.name.CatchNoStdProblem">
+         </problem>
       </checker>
       <checker
             class="com.baldapps.artemis.checkers.SizeofChecker"

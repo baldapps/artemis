@@ -21,11 +21,12 @@ public class TryCatchStatementCheckerTest extends ArtemisCheckerTestCase {
 	public static final String CATCH_ALL_ORDER_ID = TryCatchStatementChecker.CATCH_ALL_ORDER_ID;
 	public static final String CATCH_EMPTY_ID = TryCatchStatementChecker.CATCH_EMPTY_ID;
 	public static final String EMPTY_THROW_ID = TryCatchStatementChecker.EMPTY_THROW_ID;
+	public static final String CATCH_NO_STD_ID = TryCatchStatementChecker.CATCH_NO_STD_EXCEPTION;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		enableProblems(ERR_ID, CATCH_ALL_ORDER_ID, CATCH_EMPTY_ID, EMPTY_THROW_ID);
+		enableProblems(ERR_ID, CATCH_ALL_ORDER_ID, CATCH_EMPTY_ID, EMPTY_THROW_ID, CATCH_NO_STD_ID);
 	}
 
 	@Override
@@ -60,6 +61,7 @@ public class TryCatchStatementCheckerTest extends ArtemisCheckerTestCase {
 	public void testTryCatchMultiple() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(ERR_ID);
+		checkErrorLine(7, CATCH_NO_STD_ID);
 	}
 
 	//class Foo {
@@ -77,6 +79,7 @@ public class TryCatchStatementCheckerTest extends ArtemisCheckerTestCase {
 	public void testCatchWrongOrder() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLine(7, CATCH_ALL_ORDER_ID);
+		checkErrorLine(9, CATCH_NO_STD_ID);
 	}
 
 	//class Foo {
@@ -94,6 +97,7 @@ public class TryCatchStatementCheckerTest extends ArtemisCheckerTestCase {
 	public void testCatchEmpty() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLine(9, CATCH_EMPTY_ID);
+		checkErrorLine(7, CATCH_NO_STD_ID);
 	}
 
 	//class Foo {
@@ -134,5 +138,42 @@ public class TryCatchStatementCheckerTest extends ArtemisCheckerTestCase {
 	public void testEmptyThrowInCatch() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(EMPTY_THROW_ID);
+		checkErrorLine(7, CATCH_NO_STD_ID);
+	}
+
+	//namespace std {
+	// class exception {};
+	//}
+	//class MyExc : public std::exception {
+	//};
+	//class Foo {
+	//public:
+	//	Foo();
+	//	~Foo() {
+	//		try {
+	//		} catch(MyExc&) {
+	//		}
+	//	}
+	//};
+	public void testThrowDerivedStdExc() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(CATCH_NO_STD_ID);
+	}
+
+	//namespace std {
+	// class exception {};
+	//}
+	//class Foo {
+	//public:
+	//	Foo();
+	//	~Foo() {
+	//		try {
+	//		} catch(std::exception&) {
+	//		}
+	//	}
+	//};
+	public void testThrowStdExc() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(CATCH_NO_STD_ID);
 	}
 }

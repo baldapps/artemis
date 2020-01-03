@@ -12,13 +12,23 @@ package com.baldapps.artemis.checkers;
 
 import org.eclipse.cdt.codan.core.cxx.model.AbstractIndexAstChecker;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.DOMException;
+import org.eclipse.cdt.core.dom.ast.IASTDeclSpecifier;
+import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTExpressionStatement;
+import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IASTUnaryExpression;
+import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.IProblemBinding;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCatchHandler;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTryBlockStatement;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.internal.core.dom.parser.ASTQueries;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.ClassTypeHelper;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.ICPPDeferredClassInstance;
 
 @SuppressWarnings("restriction")
 public class TryCatchStatementChecker extends AbstractIndexAstChecker {
@@ -26,6 +36,7 @@ public class TryCatchStatementChecker extends AbstractIndexAstChecker {
 	public static final String CATCH_ALL_ORDER_ID = "com.baldapps.artemis.checkers.CatchAllOrderProblem"; //$NON-NLS-1$
 	public static final String CATCH_EMPTY_ID = "com.baldapps.artemis.checkers.CatchEmptyProblem"; //$NON-NLS-1$
 	public static final String EMPTY_THROW_ID = "com.baldapps.artemis.checkers.EmptyThrowProblem"; //$NON-NLS-1$
+	public static final String CATCH_NO_STD_EXCEPTION = "com.baldapps.artemis.checkers.CatchNoStdProblem"; //$NON-NLS-1$
 
 	@Override
 	public void processAst(IASTTranslationUnit ast) {
@@ -51,6 +62,10 @@ public class TryCatchStatementChecker extends AbstractIndexAstChecker {
 					for (int i = 0; i < catches.length; ++i) {
 						if (catches[i].isCatchAll()) {
 							catchAllIdx = i;
+						} else {
+							if (!verifyStdException(catches[i])) {
+								reportProblem(CATCH_NO_STD_EXCEPTION, catches[i]);
+							}
 						}
 						IASTStatement body = catches[i].getCatchBody();
 						if (body.getChildren().length == 0) {
@@ -75,5 +90,46 @@ public class TryCatchStatementChecker extends AbstractIndexAstChecker {
 				return PROCESS_CONTINUE;
 			}
 		});
+	}
+
+	private boolean verifyStdException(ICPPASTCatchHandler handler) {
+		IASTDeclaration declaration = handler.getDeclaration();
+		if (!(declaration instanceof IASTSimpleDeclaration)) {
+			return false;
+		}
+		IASTDeclSpecifier spec = ((IASTSimpleDeclaration) declaration).getDeclSpecifier();
+		if (!(spec instanceof ICPPASTNamedTypeSpecifier)) {
+			return false;
+		}
+		IBinding binding = ((ICPPASTNamedTypeSpecifier) spec).getName().resolveBinding();
+		if (binding instanceof IProblemBinding)
+			return true; //if it's a problem return true to avoid false positive
+		if (binding instanceof ICPPDeferredClassInstance) {
+			binding = ((ICPPDeferredClassInstance) binding).getClassTemplate();
+		}
+		if (!(binding instanceof ICPPClassType))
+			return false;
+		try {
+			String[] name = ((ICPPClassType) binding).getQualifiedName();
+			if (name != null && name.length == 2 && "std".equals(name[0]) && "exception".equals(name[1]))
+				return true;
+		} catch (DOMException e) {
+			ArtemisCoreActivator.log(e);
+			return true;
+		}
+		ICPPClassType[] bases = ClassTypeHelper.getAllBases((ICPPClassType) binding);
+		if (bases == null || bases.length == 0)
+			return false;
+		for (ICPPClassType base : bases) {
+			try {
+				String[] name = base.getQualifiedName();
+				if (name != null && name.length == 2 && "std".equals(name[0]) && "exception".equals(name[1]))
+					return true;
+			} catch (DOMException e) {
+				ArtemisCoreActivator.log(e);
+				return true;
+			}
+		}
+		return false;
 	}
 }
