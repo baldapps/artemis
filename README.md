@@ -40,8 +40,10 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Dynamic allocation of array
 * Delete using void pointers
 * Naming convention for classes
+* Naming convention for namespaces
 * Order convention for visibility labels
 * Class fields visibility
+* Not cacthing std::exception or any child
 * Avoid using 'catch all'
 * 'catch all' position
 * Avoid empty 'catch'
