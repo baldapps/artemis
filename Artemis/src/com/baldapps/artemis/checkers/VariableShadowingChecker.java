@@ -21,6 +21,8 @@ import java.util.Set;
 import org.eclipse.cdt.codan.checkers.CodanCheckersActivator;
 import org.eclipse.cdt.codan.core.cxx.model.AbstractIndexAstChecker;
 import org.eclipse.cdt.codan.core.model.IProblemLocation;
+import org.eclipse.cdt.codan.core.model.IProblemWorkingCopy;
+import org.eclipse.cdt.codan.internal.checkers.CheckersMessages;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.EScopeKind;
@@ -33,6 +35,7 @@ import org.eclipse.cdt.core.dom.ast.IASTParameterDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IField;
+import org.eclipse.cdt.core.dom.ast.IParameter;
 import org.eclipse.cdt.core.dom.ast.IProblemBinding;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPVariableInstance;
@@ -46,9 +49,18 @@ import org.eclipse.core.runtime.CoreException;
 public class VariableShadowingChecker extends AbstractIndexAstChecker {
 
 	public static final String ERR_ID = "com.baldapps.artemis.checkers.VariableShadowingProblem"; //$NON-NLS-1$
+	public static final String PARAM_FUNC_PARAM = "paramFuncParameters"; //$NON-NLS-1$
 
 	private IASTTranslationUnit ast;
 	private IIndex index;
+	private boolean checkFuncParams;
+
+	@Override
+	public void initPreferences(IProblemWorkingCopy problem) {
+		super.initPreferences(problem);
+		addPreference(problem, PARAM_FUNC_PARAM, CheckersMessages.SymbolShadowingChecker_CheckFunctionParameters,
+				Boolean.TRUE);
+	}
 
 	@Override
 	public void processAst(IASTTranslationUnit ast) {
@@ -73,7 +85,7 @@ public class VariableShadowingChecker extends AbstractIndexAstChecker {
 		 */
 		private boolean validBinding(IBinding binding) {
 			return binding instanceof IField || binding instanceof ICPPInternalVariable
-					|| binding instanceof ICPPVariableInstance;
+					|| binding instanceof ICPPVariableInstance || (checkFuncParams && binding instanceof IParameter);
 		}
 
 		private void report(String id, IASTNode astNode, Set<IProblemLocation> cache, Object... args) {
@@ -112,7 +124,7 @@ public class VariableShadowingChecker extends AbstractIndexAstChecker {
 
 		@Override
 		public int visit(IASTDeclarator declarator) {
-			if (declarator.getParent() instanceof IASTParameterDeclaration)
+			if (!checkFuncParams && declarator.getParent() instanceof IASTParameterDeclaration)
 				return PROCESS_CONTINUE;
 			IBinding binding = declarator.getName().resolveBinding();
 
