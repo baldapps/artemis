@@ -91,6 +91,10 @@ For rules configuration look for "Code analisys" in Eclipse preferences in C++ m
 
 Please report bugs in the GitHub issue tracker.
 
+## Known problems
+
+Static and const checker can report false positive until CDT 9.10 if array operations are involved. Use CDT with version greater than or equal to 9.11.
+
 ## License
 
 Licensed under the Eclipse Public License, Version 2.0 (the "License");
