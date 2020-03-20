@@ -15,10 +15,10 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * ~~Virtual method call in constructor/destructor~~ (included now in Eclipse 2019-06, deprecated in Artemis 2.x)
 * Throw exception in destructor
 * Global variables in constructor
-* Avoid magic numbers
-* Local variable shadowing
+* ~~Avoid magic numbers~~ (included now in Eclipse 2020-03, deprecated in Artemis 2.4.x)
+* ~~Local variable shadowing~~ (included now in Eclipse 2020-03, deprecated in Artemis 2.4.x)
 * ~~Lack of copyright information~~ (included now in Eclipse 2019-06, deprecated in Artemis 2.x)
-* Miss copy constructor or assignment operator
+* ~~Miss copy constructor or assignment operator~~ (included now in Eclipse 2020-03, deprecated in Artemis 2.4.x)
 * ~~Static variable in header file~~ (included now in Eclipse 2019-12, deprecated in Artemis 2.2.x)
 * Variable without initialization
 * ~~Multiple variable declaration~~ (included now in Eclipse 2019-12, deprecated in Artemis 2.2.x)

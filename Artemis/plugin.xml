@@ -70,50 +70,6 @@
          </problem>
       </checker>
       <checker
-            class="com.baldapps.artemis.checkers.MagicNumberChecker"
-            id="com.baldapps.artemis.checkers.MagicNumberChecker"
-            name="%checker.name.MagicNumberChecker">
-         <problem
-               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
-               defaultEnabled="false"
-               defaultSeverity="Warning"
-               description="%problem.description.MagicNumberProblem"
-               id="org.eclipse.cdt.codan.internal.checkers.MagicNumberProblem"
-               markerType="org.eclipse.cdt.codan.core.codanProblem"
-               messagePattern="%problem.messagePattern.MagicNumberProblem"
-               name="%problem.name.MagicNumberProblem">
-         </problem>
-      </checker>
-      <checker
-           class="com.baldapps.artemis.checkers.VariableShadowingChecker"
-           id="com.baldapps.artemis.checkers.VariableShadowing"
-           name="%checker.name.VariableShadowing">
-           <problem
-              category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
-              defaultEnabled="false"
-              defaultSeverity="Warning"
-              description="%problem.description.VariableShadowing"
-              id="com.baldapps.artemis.checkers.VariableShadowingProblem"
-              messagePattern="%problem.messagePattern.VariableShadowing"
-              name="%problem.name.VariableShadowing">
-	       </problem>
-       </checker>
-      <checker
-            class="com.baldapps.artemis.checkers.ShallowCopyChecker"
-            id="com.baldapps.artemis.checkers.ShallowCopyChecker"
-            name="%checker.name.ShallowCopyChecker">
-         <problem
-               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
-               defaultEnabled="false"
-               defaultSeverity="Warning"
-               description="%problem.description.ShallowCopyProblem"
-               id="com.baldapps.artemis.checkers.ShallowCopyProblem"
-               markerType="org.eclipse.cdt.codan.core.codanProblem"
-               messagePattern="%problem.messagePattern.ShallowCopyProblem"
-               name="%problem.name.ShallowCopyProblem">
-         </problem>
-      </checker>
-      <checker
             class="com.baldapps.artemis.checkers.VariablesChecker"
             id="com.baldapps.artemis.checkers.VariablesChecker"
             name="%checker.name.VariablesChecker">
