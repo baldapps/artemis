@@ -37,7 +37,7 @@ public class AutoPtrCheckerTest extends ArtemisCheckerTestCase {
 	//int foo(int arr[]) {
 	//	std::auto_ptr<int> aa;
 	//}
-	public void testUsingTrigraphs() throws Exception {
+	public void testFullQualifiedAutoPtr() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLine(6, ERR_ID);
 	}
@@ -53,8 +53,64 @@ public class AutoPtrCheckerTest extends ArtemisCheckerTestCase {
 	//int foo() {
 	//	auto_ptr<int> aa;
 	//}
-	public void testNoUsingTrigraphs() throws Exception {
+	public void testAutoPtrNoQual() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLine(10, ERR_ID);
+	}
+
+	//namespace std {
+	//	template<class T>
+	//	class auto_ptr {
+	//	public:
+	//		auto_ptr() {};
+	//	};
+	//}
+	//namespace Foo {
+	//	template<class T>
+	//	using myPtr = std::auto_ptr<T>;
+	//}
+	//int foo() {
+	//	Foo::myPtr<int> aa;
+	//}
+	public void testTemplateAlias() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(10, ERR_ID);
+	}
+
+	//namespace std {
+	//	template<class T>
+	//	class auto_ptr {
+	//	public:
+	//		auto_ptr() {};
+	//	};
+	//}
+	//namespace Foo {
+	//	typedef std::auto_ptr<int> myPtr;
+	//}
+	//int foo() {
+	//	Foo::myPtr aa;
+	//}
+	public void testTypedef() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(9, ERR_ID);
+	}
+
+	//namespace std {
+	//	template<class T>
+	//	class auto_ptr {
+	//	public:
+	//		auto_ptr() {};
+	//	};
+	//}
+	//namespace Foo {
+	//	template<class E>
+	//	class Inner {
+	//	public:
+	//		typedef std::auto_ptr<E> myPtr;
+	//	}
+	//}
+	public void testWithTemplate() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(12, ERR_ID);
 	}
 }
