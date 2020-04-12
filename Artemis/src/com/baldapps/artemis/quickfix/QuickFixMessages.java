@@ -27,6 +27,7 @@ public class QuickFixMessages extends NLS {
 	public static String QuickFixCppCast_dynamic_cast;
 	public static String QuickFixAddExplicit_add_explicit;
 	public static String QuickFixValueConventionLiterals_to_uppercase;
+	public static String QuickFixAddNoexcept_change_to_noexcept;
 
 	static {
 		NLS.initializeMessages(QuickFixMessages.class.getName(), QuickFixMessages.class);

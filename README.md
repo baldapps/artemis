@@ -88,6 +88,7 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * A const cast shall not remove const or volatile
 * Avoid unions
 * Avoid virtual base classes
+* Avoid exception specification using 'throw' keyword
 
 ## Configuration
 
