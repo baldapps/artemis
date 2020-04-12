@@ -40,12 +40,12 @@ public class ValueConventionLiteralsChecker extends AbstractIndexAstChecker {
 					switch (kind) {
 					case IASTLiteralExpression.lk_float_constant:
 						if (isLowerCase(literal.getValue())) {
-							reportProblem(ERR_ID, expression, literal.getValue());
+							reportProblem(ERR_ID, expression, new String(literal.getValue()));
 						}
 						break;
 					case IASTLiteralExpression.lk_integer_constant:
 						if (isLowerCase(literal.getValue())) {
-							reportProblem(ERR_ID, expression, literal.getValue());
+							reportProblem(ERR_ID, expression, new String(literal.getValue()));
 						}
 						break;
 					default:
