@@ -16,6 +16,7 @@ import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier.ICPPASTBaseSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTElaboratedTypeSpecifier;
 import org.eclipse.cdt.internal.core.dom.Linkage;
 import org.eclipse.cdt.internal.core.model.ASTStringUtil;
@@ -23,6 +24,8 @@ import org.eclipse.cdt.internal.core.model.ASTStringUtil;
 @SuppressWarnings("restriction")
 public class StructsChecker extends AbstractIndexAstChecker {
 	public static final String AVOID_STRUCTS_ID = "com.baldapps.artemis.checkers.AvoidStructsProblem"; //$NON-NLS-1$
+	public static final String AVOID_UNIONS_ID = "com.baldapps.artemis.checkers.AvoidUnionsProblem"; //$NON-NLS-1$
+	public static final String AVOID_VIRTUAL_BASES_ID = "com.baldapps.artemis.checkers.AvoidVirtualBasesProblem"; //$NON-NLS-1$
 
 	@Override
 	public void processAst(IASTTranslationUnit ast) {
@@ -42,11 +45,20 @@ public class StructsChecker extends AbstractIndexAstChecker {
 				ICPPASTCompositeTypeSpecifier s = (ICPPASTCompositeTypeSpecifier) element;
 				if (s.getKey() == ICPPASTCompositeTypeSpecifier.k_struct) {
 					reportProblem(AVOID_STRUCTS_ID, element, ASTStringUtil.getSimpleName(s.getName()));
+				} else if (s.getKey() == ICPPASTCompositeTypeSpecifier.k_union) {
+					reportProblem(AVOID_UNIONS_ID, element, ASTStringUtil.getSimpleName(s.getName()));
+				}
+				for (ICPPASTBaseSpecifier base : s.getBaseSpecifiers()) {
+					if (base.isVirtual()) {
+						reportProblem(AVOID_VIRTUAL_BASES_ID, base, new String(base.getNameSpecifier().toCharArray()));
+					}
 				}
 			} else if (element instanceof ICPPASTElaboratedTypeSpecifier) {
 				ICPPASTElaboratedTypeSpecifier s = (ICPPASTElaboratedTypeSpecifier) element;
 				if (s.getKind() == ICPPASTElaboratedTypeSpecifier.k_struct) {
 					reportProblem(AVOID_STRUCTS_ID, element, ASTStringUtil.getSimpleName(s.getName()));
+				} else if (s.getKind() == ICPPASTElaboratedTypeSpecifier.k_union) {
+					reportProblem(AVOID_UNIONS_ID, element, ASTStringUtil.getSimpleName(s.getName()));
 				}
 			}
 			return PROCESS_CONTINUE;

@@ -21,12 +21,14 @@ import com.baldapps.artemis.checkers.StructsChecker;
  */
 public class StructsCheckerTest extends ArtemisCheckerTestCase {
 
-	public static final String ERR_ID = StructsChecker.AVOID_STRUCTS_ID;
+	public static final String STRUCT_ERR_ID = StructsChecker.AVOID_STRUCTS_ID;
+	public static final String UNION_ERR_ID = StructsChecker.AVOID_UNIONS_ID;
+	public static final String VIRTUAL_ERR_ID = StructsChecker.AVOID_VIRTUAL_BASES_ID;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		enableProblems(ERR_ID);
+		enableProblems(STRUCT_ERR_ID, UNION_ERR_ID, VIRTUAL_ERR_ID);
 	}
 
 	@Override
@@ -40,8 +42,38 @@ public class StructsCheckerTest extends ArtemisCheckerTestCase {
 	//void foo(void) {
 	//  struct Foo f;
 	//}
-	public void testGlobalVSFuncLoc() throws Exception {
+	public void testStruct() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLines(1, 5);
+	}
+
+	//union Foo {
+	//	int a;
+	//	double b;
+	//}
+	//void foo(void) {
+	//  union Foo f;
+	//}
+	public void testUnion() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLines(1, 6);
+	}
+
+	//class Base {
+	//}
+	//class Child: public virtual Base {
+	//}
+	public void testVirtualBase() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(3, VIRTUAL_ERR_ID);
+	}
+
+	//class Base {
+	//}
+	//class Child: public Base {
+	//}
+	public void testNoVirtualBase() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(VIRTUAL_ERR_ID);
 	}
 }

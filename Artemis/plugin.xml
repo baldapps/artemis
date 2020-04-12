@@ -615,6 +615,26 @@
                messagePattern="%problem.messagePattern.AvoidStructsProblem"
                name="%problem.name.AvoidStructsProblem">
          </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.AvoidUnionsProblem"
+               id="com.baldapps.artemis.checkers.AvoidUnionsProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.AvoidUnionsProblem"
+               name="%problem.name.AvoidUnionsProblem">
+         </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.AvoidVirtualBasesProblem"
+               id="com.baldapps.artemis.checkers.AvoidVirtualBasesProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.AvoidVirtualBasesProblem"
+               name="%problem.name.AvoidVirtualBasesProblem">
+         </problem>
       </checker>
       <checker
             class="com.baldapps.artemis.checkers.FunctionChecker"
