@@ -14,16 +14,11 @@ import java.util.Optional;
 
 import org.eclipse.cdt.codan.core.cxx.model.AbstractIndexAstChecker;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
-import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
-import org.eclipse.cdt.core.dom.ast.IASTDoStatement;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
 import org.eclipse.cdt.core.dom.ast.IASTName;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.cdt.core.dom.ast.IASTSwitchStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-import org.eclipse.cdt.core.dom.ast.IASTWhileStatement;
 import org.eclipse.cdt.core.dom.ast.IBasicType;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IProblemBinding;
@@ -38,7 +33,6 @@ import com.baldapps.artemis.utils.flags.VariableFlags;
 @SuppressWarnings("restriction")
 public class ForLoopChecker extends AbstractIndexAstChecker {
 	public static final String FLOAT_COUNTER_ID = "com.baldapps.artemis.checkers.FloatCounterProblem"; //$NON-NLS-1$
-	public static final String BREAK_IN_LOOP_ID = "com.baldapps.artemis.checkers.BreakInLoopProblem"; //$NON-NLS-1$
 	public static final String CNT_MODIFICATION_ID = "com.baldapps.artemis.checkers.CounterModificationProblem"; //$NON-NLS-1$
 
 	private class ForVisitor extends ASTVisitor {
@@ -98,16 +92,6 @@ public class ForLoopChecker extends AbstractIndexAstChecker {
 				shouldVisitStatements = true;
 			}
 
-			private boolean isEnclosedInFor(IASTNode node) {
-				while (node != null && !IASTForStatement.class.isInstance(node)) {
-					node = node.getParent();
-					if (IASTSwitchStatement.class.isInstance(node) || IASTWhileStatement.class.isInstance(node)
-							|| IASTDoStatement.class.isInstance(node))
-						break;
-				}
-				return IASTForStatement.class.isInstance(node);
-			}
-
 			@Override
 			public int visit(IASTStatement statement) {
 				if (statement instanceof IASTForStatement) {
@@ -129,10 +113,6 @@ public class ForLoopChecker extends AbstractIndexAstChecker {
 							if (body != null)
 								body.accept(v);
 						}
-					}
-				} else if (statement instanceof IASTBreakStatement) {
-					if (isEnclosedInFor(statement)) {
-						reportProblem(BREAK_IN_LOOP_ID, statement);
 					}
 				}
 				return PROCESS_CONTINUE;

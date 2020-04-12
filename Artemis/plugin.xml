@@ -439,16 +439,6 @@
                category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
                defaultEnabled="false"
                defaultSeverity="Warning"
-               description="%problem.description.BreakInLoopProblem"
-               id="com.baldapps.artemis.checkers.BreakInLoopProblem"
-               markerType="org.eclipse.cdt.codan.core.codanProblem"
-               messagePattern="%problem.messagePattern.BreakInLoopProblem"
-               name="%problem.name.BreakInLoopProblem">
-         </problem>
-         <problem
-               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
-               defaultEnabled="false"
-               defaultSeverity="Warning"
                description="%problem.description.CounterModificationProblem"
                id="com.baldapps.artemis.checkers.CounterModificationProblem"
                markerType="org.eclipse.cdt.codan.core.codanProblem"
@@ -725,6 +715,31 @@
                messagePattern="%problem.messagePattern.ContinueProblem"
                name="%problem.name.ContinueProblem">
          </problem>
-      </checker>     
+      </checker>
+            <checker
+            class="com.baldapps.artemis.checkers.BreakLoopChecker"
+            id="com.baldapps.artemis.checkers.BreakLoopChecker"
+            name="%checker.name.BreakLoopChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.MoreThanOneBreakGotoInLoopProblem"
+               id="com.baldapps.artemis.checkers.MoreThanOneBreakGotoInLoopProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.MoreThanOneBreakGotoInLoopProblem"
+               name="%problem.name.MoreThanOneBreakGotoInLoopProblem">
+         </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.BreakProblem"
+               id="com.baldapps.artemis.checkers.BreakProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.BreakProblem"
+               name="%problem.name.BreakProblem">
+         </problem>
+      </checker>      
    </extension>
 </plugin>

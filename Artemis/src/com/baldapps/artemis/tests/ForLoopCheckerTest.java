@@ -18,13 +18,12 @@ import com.baldapps.artemis.checkers.ForLoopChecker;
 public class ForLoopCheckerTest extends ArtemisCheckerTestCase {
 
 	public static final String ERR_ID = ForLoopChecker.FLOAT_COUNTER_ID;
-	public static final String ERR_BREAK_ID = ForLoopChecker.BREAK_IN_LOOP_ID;
 	public static final String CNT_MODIFICATION_ID = ForLoopChecker.CNT_MODIFICATION_ID;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		enableProblems(ERR_ID, ERR_BREAK_ID, CNT_MODIFICATION_ID);
+		enableProblems(ERR_ID, CNT_MODIFICATION_ID);
 	}
 
 	@Override
@@ -48,16 +47,6 @@ public class ForLoopCheckerTest extends ArtemisCheckerTestCase {
 	public void testForWithoutFloat() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(ERR_ID);
-	}
-
-	//void foo() {
-	//	for (int f = 0; f < 4; f++) {
-	//		break;
-	//	}
-	//}
-	public void testForBreak() throws Exception {
-		loadCodeAndRun(getAboveComment());
-		checkErrorLine(3, ERR_BREAK_ID);
 	}
 
 	//void foo() {
