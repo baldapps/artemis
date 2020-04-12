@@ -716,12 +716,12 @@
                name="%problem.name.ContinueProblem">
          </problem>
       </checker>
-            <checker
+      <checker
             class="com.baldapps.artemis.checkers.BreakLoopChecker"
             id="com.baldapps.artemis.checkers.BreakLoopChecker"
             name="%checker.name.BreakLoopChecker">
          <problem
-               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
                defaultEnabled="false"
                defaultSeverity="Warning"
                description="%problem.description.MoreThanOneBreakGotoInLoopProblem"
@@ -731,7 +731,7 @@
                name="%problem.name.MoreThanOneBreakGotoInLoopProblem">
          </problem>
          <problem
-               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
                defaultEnabled="false"
                defaultSeverity="Warning"
                description="%problem.description.BreakProblem"
@@ -739,6 +739,21 @@
                markerType="org.eclipse.cdt.codan.core.codanProblem"
                messagePattern="%problem.messagePattern.BreakProblem"
                name="%problem.name.BreakProblem">
+         </problem>
+      </checker>
+      <checker
+            class="com.baldapps.artemis.checkers.ConstCastChecker"
+            id="com.baldapps.artemis.checkers.ConstCastChecker"
+            name="%checker.name.ConstCastChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               defaultEnabled="false"
+               defaultSeverity="Error"
+               description="%problem.description.ConstCastProblem"
+               id="com.baldapps.artemis.checkers.ConstCastProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.ConstCastProblem"
+               name="%problem.name.ConstCastProblem">
          </problem>
       </checker>      
    </extension>

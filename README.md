@@ -85,6 +85,7 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Use lowercase for literals
 * Avoid the use of 'continue' keyword
 * Loops should not have more than one "break" or "goto" statement
+* A const cast shall not remove const or volatile
 
 ## Configuration
 

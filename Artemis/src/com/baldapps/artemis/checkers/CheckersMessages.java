@@ -19,16 +19,9 @@ import org.eclipse.osgi.util.NLS;
 public class CheckersMessages extends NLS {
 	public static String GenericParameter_ParameterExceptions;
 	public static String GenericParameter_ParameterExceptionsItem;
-	public static String MagicNumberChecker_ParameterArray;
-	public static String MagicNumberChecker_ParameterOperatorParen;
-	public static String SwitchCaseChecker_ParameterDefaultAllEnums;
-	public static String Copyright_regex;
-	public static String ShallowCopyChecker_OnlyNew;
 	public static String NamingConventionClassesChecker_ClassLabelNamePattern;
 	public static String NamingConventionClassesChecker_InterfaceLabelNamePattern;
 	public static String NamingConventionClassesChecker_AllowProtected;
-	public static String BlacklistChecker_list;
-	public static String BlacklistChecker_list_item;
 	public static String ClassMembersCopiedChecker_SkipMethodWithFCalls;
 	public static String ExplicitChecker_IncludeConversionOperators;
 	public static String NamingConventionClassesChecker_NamespaceLabelNamePattern;
