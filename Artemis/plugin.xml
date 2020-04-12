@@ -691,6 +691,21 @@
                messagePattern="%problem.messagePattern.UseExplicitProblem"
                name="%problem.name.UseExplicitProblem">
          </problem>
+      </checker>
+      <checker
+            class="com.baldapps.artemis.checkers.ValueConventionLiteralsChecker"
+            id="com.baldapps.artemis.checkers.ValueConventionLiteralsChecker"
+            name="%checker.name.ValueConventionLiteralsChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.ValueConventionLiteralsProblem"
+               id="com.baldapps.artemis.checkers.ValueConventionLiteralsProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.ValueConventionLiteralsProblem"
+               name="%problem.name.ValueConventionLiteralsProblem">
+         </problem>
       </checker>     
    </extension>
 </plugin>
