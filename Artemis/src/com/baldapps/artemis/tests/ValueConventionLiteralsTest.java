@@ -54,4 +54,22 @@ public class ValueConventionLiteralsTest extends ArtemisCheckerTestCase {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(ERR_ID);
 	}
+
+	//static int AA = 0x12bu;
+	public void testHexLowercase() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(1, ERR_ID);
+	}
+
+	//static int AA = 0x12bU;
+	public void testHexUppercase() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_ID);
+	}
+
+	//static int AA = 0x0;
+	public void testHex() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_ID);
+	}
 }

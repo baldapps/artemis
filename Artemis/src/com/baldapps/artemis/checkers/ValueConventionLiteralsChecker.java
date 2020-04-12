@@ -57,9 +57,24 @@ public class ValueConventionLiteralsChecker extends AbstractIndexAstChecker {
 
 			private boolean isLowerCase(char[] value) {
 				int len = value.length;
-				for (int i = 0; i < len; ++i) {
-					if (!Character.isDigit(value[i]) && Character.isLowerCase(value[i]))
-						return true;
+				if (isHex(value)) {
+					for (int i = Math.max(0, len - 2); i < len; ++i) {
+						char lower = Character.toLowerCase(value[i]);
+						if (((lower < 'a' || lower > 'f') && lower != 'x') && Character.isLowerCase(value[i]))
+							return true;
+					}
+				} else {
+					for (int i = Math.max(0, len - 2); i < len; ++i) {
+						if (!Character.isDigit(value[i]) && Character.isLowerCase(value[i]))
+							return true;
+					}
+				}
+				return false;
+			}
+
+			private boolean isHex(char[] value) {
+				if (value.length >= 3 && value[0] == '0' && (value[1] == 'x' || value[1] == 'X')) {
+					return true;
 				}
 				return false;
 			}

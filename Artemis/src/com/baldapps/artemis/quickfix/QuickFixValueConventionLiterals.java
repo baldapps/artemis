@@ -51,7 +51,9 @@ public class QuickFixValueConventionLiterals extends AbstractArtemisAstRewriteQu
 		}
 		ASTRewrite r = ASTRewrite.create(ast);
 		IASTLiteralExpression newLiteral = (IASTLiteralExpression) astNode.copy(CopyStyle.withLocations);
-		newLiteral.setValue(toUpperCase(((IASTLiteralExpression) astNode).getValue()));
+		char[] input = ((IASTLiteralExpression) astNode).getValue();
+		toUpperCase(input);
+		newLiteral.setValue(input);
 		r.replace(astNode, newLiteral, null);
 		Change c = r.rewriteAST();
 		try {
@@ -67,12 +69,26 @@ public class QuickFixValueConventionLiterals extends AbstractArtemisAstRewriteQu
 		}
 	}
 
-	private char[] toUpperCase(char[] input) {
-		char[] tmp = new char[input.length];
+	private void toUpperCase(char[] input) {
 		int len = input.length;
-		for (int i = 0; i < len; ++i) {
-			tmp[i] = Character.toUpperCase(input[i]);
+		if (isHex(input)) {
+			for (int i = len - 1; i > 0; --i) {
+				char lower = Character.toLowerCase(input[i]);
+				if ((lower >= 'a' && lower <= 'f') || lower == 'x')
+					break;
+				input[i] = Character.toUpperCase(input[i]);
+			}
+		} else {
+			for (int i = 0; i < len; ++i) {
+				input[i] = Character.toUpperCase(input[i]);
+			}
 		}
-		return tmp;
+	}
+
+	private boolean isHex(char[] value) {
+		if (value.length >= 3 && value[0] == '0' && (value[1] == 'x' || value[1] == 'X')) {
+			return true;
+		}
+		return false;
 	}
 }
