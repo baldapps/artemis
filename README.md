@@ -82,6 +82,7 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Returning no const class field from const method
 * Declared class fields but without any constructor
 * Use explicit keyword where possible
+* Use lowercase for literals
 
 ## Configuration
 
