@@ -710,6 +710,21 @@
                messagePattern="%problem.messagePattern.ValueConventionLiteralsProblem"
                name="%problem.name.ValueConventionLiteralsProblem">
          </problem>
+      </checker>
+      <checker
+            class="com.baldapps.artemis.checkers.ContinueChecker"
+            id="com.baldapps.artemis.checkers.ContinueChecker"
+            name="%checker.name.ContinueChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.ContinueProblem"
+               id="com.baldapps.artemis.checkers.ContinueProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.ContinueProblem"
+               name="%problem.name.ContinueProblem">
+         </problem>
       </checker>     
    </extension>
 </plugin>

@@ -83,6 +83,7 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Declared class fields but without any constructor
 * Use explicit keyword where possible
 * Use lowercase for literals
+* Avoid the use of 'continue' keyword
 
 ## Configuration
 
