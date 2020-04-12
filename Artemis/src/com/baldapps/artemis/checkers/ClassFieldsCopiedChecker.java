@@ -42,10 +42,9 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPMethod;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPReferenceType;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.index.IIndexBinding;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.CPPVariableReadWriteFlags;
-import org.eclipse.cdt.internal.core.pdom.dom.PDOMName;
 
 import com.baldapps.artemis.utils.SemanticUtils;
+import com.baldapps.artemis.utils.flags.VariableFlags;
 
 @SuppressWarnings("restriction")
 public class ClassFieldsCopiedChecker extends AbstractIndexAstChecker {
@@ -164,7 +163,7 @@ public class ClassFieldsCopiedChecker extends AbstractIndexAstChecker {
 						IField equivalentFieldBinding = getContainedEquivalentBinding(actualConstructorFields, binding,
 								name.getTranslationUnit().getIndex());
 						if (equivalentFieldBinding != null) {
-							if ((CPPVariableReadWriteFlags.getReadWriteFlags(name) & PDOMName.WRITE_ACCESS) != 0) {
+							if (VariableFlags.mayBeWriteAccess(VariableFlags.getFlags(name))) {
 								actualConstructorFields.remove(equivalentFieldBinding);
 							}
 						}

@@ -13,6 +13,7 @@
 package com.baldapps.artemis.checkers;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 
@@ -43,9 +44,10 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPMethod;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPReferenceType;
 import org.eclipse.cdt.internal.core.dom.parser.ASTQueries;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.ClassTypeHelper;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.CPPVariableReadWriteFlags;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil;
 import org.eclipse.cdt.internal.core.pdom.dom.PDOMName;
+
+import com.baldapps.artemis.utils.flags.VariableFlags;
 
 /**
  * Reports a problem on the next cases:
@@ -310,7 +312,8 @@ public class ClassMembersConstChecker extends AbstractIndexAstChecker {
 		}
 
 		private boolean isWrittenToNonMutable(IASTName name) {
-			if ((CPPVariableReadWriteFlags.getReadWriteFlags(name) & PDOMName.WRITE_ACCESS) != 0) {
+			Optional<Integer> flags = VariableFlags.getFlags(name);
+			if (flags.isPresent() && (flags.get() & PDOMName.WRITE_ACCESS) != 0) {
 				/*
 				 * If we are writing a field but there's an explicit no-const cast written by the user
 				 * we take it into account and we avoid to consider it a write operation.

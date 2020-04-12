@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.baldapps.artemis.checkers;
 
+import java.util.Optional;
+
 import org.eclipse.cdt.codan.core.cxx.model.AbstractIndexAstChecker;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTBreakStatement;
@@ -26,12 +28,12 @@ import org.eclipse.cdt.core.dom.ast.IBasicType;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IProblemBinding;
 import org.eclipse.cdt.core.dom.ast.IType;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.CPPVariableReadWriteFlags;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil;
 import org.eclipse.cdt.internal.core.model.ASTStringUtil;
 import org.eclipse.cdt.internal.core.pdom.dom.PDOMName;
 
 import com.baldapps.artemis.utils.IndexUtils;
+import com.baldapps.artemis.utils.flags.VariableFlags;
 
 @SuppressWarnings("restriction")
 public class ForLoopChecker extends AbstractIndexAstChecker {
@@ -52,7 +54,8 @@ public class ForLoopChecker extends AbstractIndexAstChecker {
 			IBinding currentBinding = name.resolveBinding();
 			if (currentBinding != null && !(currentBinding instanceof IProblemBinding) && IndexUtils
 					.areEquivalentBindings(currentBinding, binding, name.getTranslationUnit().getIndex())) {
-				if ((CPPVariableReadWriteFlags.getReadWriteFlags(name) & PDOMName.WRITE_ACCESS) != 0) {
+				Optional<Integer> flags = VariableFlags.getFlags(name);
+				if (flags.isPresent() && (flags.get() & PDOMName.WRITE_ACCESS) != 0) {
 					reportProblem(CNT_MODIFICATION_ID, name, ASTStringUtil.getSimpleName(name));
 					return PROCESS_ABORT;
 				}
@@ -78,7 +81,8 @@ public class ForLoopChecker extends AbstractIndexAstChecker {
 		public int visit(IASTName name) {
 			IBinding currentBinding = name.resolveBinding();
 			if (currentBinding != null && !(currentBinding instanceof IProblemBinding)) {
-				if ((CPPVariableReadWriteFlags.getReadWriteFlags(name) & PDOMName.WRITE_ACCESS) != 0) {
+				Optional<Integer> flags = VariableFlags.getFlags(name);
+				if (flags.isPresent() && (flags.get() & PDOMName.WRITE_ACCESS) != 0) {
 					this.name = name;
 					return PROCESS_ABORT;
 				}
