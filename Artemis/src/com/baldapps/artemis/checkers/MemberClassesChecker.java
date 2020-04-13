@@ -20,10 +20,13 @@ import org.eclipse.cdt.codan.core.model.IProblemLocationFactory;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
+import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.IValue;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPConstructor;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPField;
@@ -33,7 +36,9 @@ import org.eclipse.cdt.core.dom.ast.cpp.SemanticQueries;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.parser.util.ArrayUtil;
 import org.eclipse.cdt.core.parser.util.ObjectSet;
+import org.eclipse.cdt.internal.core.dom.parser.ASTQueries;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.ClassTypeHelper;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.ICPPEvaluation;
 import org.eclipse.cdt.internal.core.model.ASTStringUtil;
 import org.eclipse.core.runtime.CoreException;
 
@@ -53,6 +58,7 @@ public class MemberClassesChecker extends AbstractIndexAstChecker {
 	public static final String ASSIGN_OP_ONLY = "com.baldapps.artemis.checkers.AssignOpOnlyProblem"; //$NON-NLS-1$
 	public static final String VIRTUAL_NO_OVERRIDE = "com.baldapps.artemis.checkers.VirtualNoOverrideProblem"; //$NON-NLS-1$
 	public static final String PROTECTED_FIELDS = "com.baldapps.artemis.checkers.AvoidProtectedFieldsProblem"; //$NON-NLS-1$
+	public static final String MOVE_OP_NOEXCEPT = "com.baldapps.artemis.checkers.MoveOpNoexceptProblem"; //$NON-NLS-1$
 
 	private static final List<String> illOverloads = Arrays.asList("operator &&", "operator ||", "operator ,");
 
@@ -130,6 +136,27 @@ public class MemberClassesChecker extends AbstractIndexAstChecker {
 									reportProblem(CTOR_DTOR_INLINE, m, element,
 											ASTStringUtil.getSimpleName(clazz.getName()));
 								}
+								if (SemanticUtils.isMoveAssignmentOperator(m) && !m.isDeleted() && !m.isImplicit()) {
+									IASTName[] names = element.getTranslationUnit().getDeclarationsInAST(m);
+									if (names.length == 1) {
+										ICPPASTFunctionDefinition f = ASTQueries.findAncestorWithType(names[0],
+												ICPPASTFunctionDefinition.class);
+										if (f == null || !f.isDefaulted()) {
+											ICPPEvaluation noExcept = m.getDeclaredType().getNoexceptSpecifier();
+											if (noExcept != null) {
+												IValue val = noExcept.getValue();
+												Number num = val.numberValue();
+												if (num != null && num.longValue() == 0) {
+													reportProblem(MOVE_OP_NOEXCEPT, m, element,
+															ASTStringUtil.getSimpleName(clazz.getName()));
+												}
+											} else {
+												reportProblem(MOVE_OP_NOEXCEPT, m, element,
+														ASTStringUtil.getSimpleName(clazz.getName()));
+											}
+										}
+									}
+								}
 								checkOverriddenMethodInBaseClass(element, classType, m);
 								if (illOverloads.contains(m.getName()))
 									reportProblem(AVOID_OVERLOADS, m, element, m.getName());
@@ -161,6 +188,27 @@ public class MemberClassesChecker extends AbstractIndexAstChecker {
 								}
 								if (isCopyCtor && !m.isImplicit() && !m.isDeleted()) {
 									hasUserCopyCtor = true;
+								}
+								if (isMoveCtor && !m.isDeleted() && !m.isImplicit()) {
+									IASTName[] names = element.getTranslationUnit().getDeclarationsInAST(m);
+									if (names.length == 1) {
+										ICPPASTFunctionDefinition f = ASTQueries.findAncestorWithType(names[0],
+												ICPPASTFunctionDefinition.class);
+										if (f == null || !f.isDefaulted()) {
+											ICPPEvaluation noExcept = m.getDeclaredType().getNoexceptSpecifier();
+											if (noExcept != null) {
+												IValue val = noExcept.getValue();
+												Number num = val.numberValue();
+												if (num != null && num.longValue() == 0) {
+													reportProblem(MOVE_OP_NOEXCEPT, m, element,
+															ASTStringUtil.getSimpleName(clazz.getName()));
+												}
+											} else {
+												reportProblem(MOVE_OP_NOEXCEPT, m, element,
+														ASTStringUtil.getSimpleName(clazz.getName()));
+											}
+										}
+									}
 								}
 							}
 							if (!hasAtLeastOneUserCtor) {

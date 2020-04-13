@@ -628,6 +628,16 @@
                messagePattern="%problem.messagePattern.AvoidProtectedFieldsProblem"
                name="%problem.name.AvoidProtectedFieldsProblem">
          </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.MoveOpNoexceptProblem"
+               id="com.baldapps.artemis.checkers.MoveOpNoexceptProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.MoveOpNoexceptProblem"
+               name="%problem.name.MoveOpNoexceptProblem">
+         </problem>
       </checker>
       <checker
             class="com.baldapps.artemis.checkers.StructsChecker"

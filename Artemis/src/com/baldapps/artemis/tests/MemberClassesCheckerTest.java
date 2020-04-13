@@ -32,13 +32,14 @@ public class MemberClassesCheckerTest extends ArtemisCheckerTestCase {
 	public static final String ASSIGN_OP_ONLY = MemberClassesChecker.ASSIGN_OP_ONLY;
 	public static final String VIRTUAL_NO_OVERRIDE = MemberClassesChecker.VIRTUAL_NO_OVERRIDE;
 	public static final String PROTECTED_FIELDS = MemberClassesChecker.PROTECTED_FIELDS;
+	public static final String MOVE_OP_NOEXCEPT = MemberClassesChecker.MOVE_OP_NOEXCEPT;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		enableProblems(CTOR_DTOR_INLINE_ID, IMPLICIT_VIRTUAL_ID, VIRTUAL_INLINE_ID, AVOID_OVERLOAD_ID, USER_CTOR,
 				ABSTRACT_NO_COPY, MULTIPLE_INHERITANCE, COPY_CTOR_ONLY, ASSIGN_OP_ONLY, VIRTUAL_NO_OVERRIDE,
-				PROTECTED_FIELDS);
+				PROTECTED_FIELDS, MOVE_OP_NOEXCEPT);
 	}
 
 	@Override
@@ -333,5 +334,49 @@ public class MemberClassesCheckerTest extends ArtemisCheckerTestCase {
 	public void testProtectedFieldChild() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLine(1, PROTECTED_FIELDS);
+	}
+
+	//class A {
+	//public:
+	//	A();
+	//	A(A&& o) = default;
+	//	A& operator=(A&& o) = default;
+	//};
+	public void testMoveDefault() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(MOVE_OP_NOEXCEPT);
+	}
+
+	//class A {
+	//public:
+	//	A();
+	//	A(A&& o) noexcept;
+	//	A& operator=(A&& o) noexcept;
+	//};
+	public void testMoveNoexcept() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(MOVE_OP_NOEXCEPT);
+	}
+
+	//class A {
+	//public:
+	//	A();
+	//	A(A&& o);
+	//	A& operator=(A&& o);
+	//};
+	public void testMoveNoNoexcept() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(1, MOVE_OP_NOEXCEPT);
+	}
+
+	//class A {
+	//public:
+	//	A();
+	//	A(A&& o) noexcept(false);
+	//	A& operator=(A&& o) noexcept(false);
+	//};
+	public void testMoveNoexceptFalse() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(1, MOVE_OP_NOEXCEPT);
 	}
 }

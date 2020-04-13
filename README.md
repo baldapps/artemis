@@ -90,7 +90,8 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Avoid virtual base classes
 * Avoid exception specification using 'throw' keyword
 * Avoid protected fields
-* Use always 'override' keyword where applicable 
+* Use always 'override' keyword where applicable
+* Use always 'noexcept' keyword for move constructor and move assignment operator 
 
 ## Configuration
 
