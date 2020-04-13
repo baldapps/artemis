@@ -828,6 +828,21 @@
                messagePattern="%problem.messagePattern.ExceptionProblem"
                name="%problem.name.ExceptionProblem">
          </problem>
+      </checker>
+      <checker
+            class="com.baldapps.artemis.checkers.IncludeBlacklistChecker"
+            id="com.baldapps.artemis.checkers.IncludeBlacklistChecker"
+            name="%checker.name.IncludeBlacklistChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.IncludeBlacklistProblem"
+               id="com.baldapps.artemis.checkers.IncludeBlacklistProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.IncludeBlacklistProblem"
+               name="%problem.name.IncludeBlacklistProblem">
+         </problem>
       </checker>      
    </extension>
 </plugin>
