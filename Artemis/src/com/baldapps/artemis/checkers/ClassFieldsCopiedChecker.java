@@ -46,7 +46,6 @@ import org.eclipse.cdt.core.index.IIndexBinding;
 import com.baldapps.artemis.utils.SemanticUtils;
 import com.baldapps.artemis.utils.flags.VariableFlags;
 
-@SuppressWarnings("restriction")
 public class ClassFieldsCopiedChecker extends AbstractIndexAstChecker {
 	public static final String ER_ID = "com.baldapps.artemis.checkers.ClassFieldsCopiedProblem"; //$NON-NLS-1$
 	public static final String PARAM_SKIP = "skip"; //$NON-NLS-1$
