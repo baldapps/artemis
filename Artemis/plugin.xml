@@ -39,6 +39,10 @@
              class="com.baldapps.artemis.quickfix.QuickFixAddNoexcept"
              problemId="com.baldapps.artemis.checkers.ExceptionProblem">
        </resolution>
+       <resolution
+             class="com.baldapps.artemis.quickfix.QuickFixAddOverride"
+             problemId="com.baldapps.artemis.checkers.VirtualNoOverrideProblem">
+       </resolution>
    </extension>
    <extension
          point="org.eclipse.cdt.codan.core.checkers">
@@ -603,6 +607,26 @@
                markerType="org.eclipse.cdt.codan.core.codanProblem"
                messagePattern="%problem.messagePattern.AssignOpOnlyProblem"
                name="%problem.name.AssignOpOnlyProblem">
+         </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.VirtualNoOverrideProblem"
+               id="com.baldapps.artemis.checkers.VirtualNoOverrideProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.VirtualNoOverrideProblem"
+               name="%problem.name.VirtualNoOverrideProblem">
+         </problem>
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.AvoidProtectedFieldsProblem"
+               id="com.baldapps.artemis.checkers.AvoidProtectedFieldsProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.AvoidProtectedFieldsProblem"
+               name="%problem.name.AvoidProtectedFieldsProblem">
          </problem>
       </checker>
       <checker

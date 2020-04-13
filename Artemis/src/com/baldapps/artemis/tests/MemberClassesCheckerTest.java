@@ -30,12 +30,15 @@ public class MemberClassesCheckerTest extends ArtemisCheckerTestCase {
 	public static final String MULTIPLE_INHERITANCE = MemberClassesChecker.MULTIPLE_INHERITANCE;
 	public static final String COPY_CTOR_ONLY = MemberClassesChecker.COPY_CTOR_ONLY;
 	public static final String ASSIGN_OP_ONLY = MemberClassesChecker.ASSIGN_OP_ONLY;
+	public static final String VIRTUAL_NO_OVERRIDE = MemberClassesChecker.VIRTUAL_NO_OVERRIDE;
+	public static final String PROTECTED_FIELDS = MemberClassesChecker.PROTECTED_FIELDS;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		enableProblems(CTOR_DTOR_INLINE_ID, IMPLICIT_VIRTUAL_ID, VIRTUAL_INLINE_ID, AVOID_OVERLOAD_ID, USER_CTOR,
-				ABSTRACT_NO_COPY, MULTIPLE_INHERITANCE, COPY_CTOR_ONLY, ASSIGN_OP_ONLY);
+				ABSTRACT_NO_COPY, MULTIPLE_INHERITANCE, COPY_CTOR_ONLY, ASSIGN_OP_ONLY, VIRTUAL_NO_OVERRIDE,
+				PROTECTED_FIELDS);
 	}
 
 	@Override
@@ -101,6 +104,21 @@ public class MemberClassesCheckerTest extends ArtemisCheckerTestCase {
 	public void testImplicitVirtual() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkErrorLine(5, IMPLICIT_VIRTUAL_ID);
+		checkErrorLine(5, VIRTUAL_NO_OVERRIDE);
+	}
+
+	//class B {
+	//public:
+	//	virtual void tt();
+	//}
+	//class A: public B {
+	//public:
+	//	virtual void tt() override;
+	//};
+	public void testVirtualOverride() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(IMPLICIT_VIRTUAL_ID);
+		checkNoErrorsOfKind(VIRTUAL_NO_OVERRIDE);
 	}
 
 	//class B {
@@ -293,4 +311,27 @@ public class MemberClassesCheckerTest extends ArtemisCheckerTestCase {
 		checkNoErrorsOfKind(COPY_CTOR_ONLY);
 	}
 
+	//class A {
+	//public:
+	//	A();
+	//protected:
+	//	int foo;
+	//};
+	public void testProtectedField() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(1, PROTECTED_FIELDS);
+	}
+
+	//class Base {
+	//protected:
+	//	int foo;
+	//};
+	//class A: public Base {
+	//public:
+	//	A();
+	//};
+	public void testProtectedFieldChild() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(1, PROTECTED_FIELDS);
+	}
 }

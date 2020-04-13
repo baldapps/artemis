@@ -26,10 +26,12 @@ import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPConstructor;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPField;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMember;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMethod;
 import org.eclipse.cdt.core.dom.ast.cpp.SemanticQueries;
 import org.eclipse.cdt.core.index.IIndex;
+import org.eclipse.cdt.core.parser.util.ArrayUtil;
 import org.eclipse.cdt.core.parser.util.ObjectSet;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.ClassTypeHelper;
 import org.eclipse.cdt.internal.core.model.ASTStringUtil;
@@ -49,6 +51,8 @@ public class MemberClassesChecker extends AbstractIndexAstChecker {
 	public static final String MULTIPLE_INHERITANCE = "com.baldapps.artemis.checkers.AvoidMultipleInheritanceProblem"; //$NON-NLS-1$
 	public static final String COPY_CTOR_ONLY = "com.baldapps.artemis.checkers.CopyCtorOnlyProblem"; //$NON-NLS-1$
 	public static final String ASSIGN_OP_ONLY = "com.baldapps.artemis.checkers.AssignOpOnlyProblem"; //$NON-NLS-1$
+	public static final String VIRTUAL_NO_OVERRIDE = "com.baldapps.artemis.checkers.VirtualNoOverrideProblem"; //$NON-NLS-1$
+	public static final String PROTECTED_FIELDS = "com.baldapps.artemis.checkers.AvoidProtectedFieldsProblem"; //$NON-NLS-1$
 
 	private static final List<String> illOverloads = Arrays.asList("operator &&", "operator ||", "operator ,");
 
@@ -82,8 +86,11 @@ public class MemberClassesChecker extends AbstractIndexAstChecker {
 
 	private class NodeVisitor extends ASTVisitor {
 
+		private ICPPMethod[] cachedAllInheritedMethods;
+
 		public NodeVisitor() {
 			shouldVisitDeclSpecifiers = true;
+			cachedAllInheritedMethods = null;
 		}
 
 		@Override
@@ -95,11 +102,20 @@ public class MemberClassesChecker extends AbstractIndexAstChecker {
 						IBinding binding = clazz.getName().resolveBinding();
 						if (binding instanceof ICPPClassType) {
 							ICPPClassType classType = (ICPPClassType) binding;
-							if (classType.getBases().length >= 2) {
+							int numberOfBases = classType.getBases().length;
+							if (numberOfBases >= 2) {
 								reportProblem(MULTIPLE_INHERITANCE, element,
 										ASTStringUtil.getSimpleName(clazz.getName()));
 							}
 							ObjectSet<ICPPMethod> methods = ClassTypeHelper.getOwnMethods(classType);
+							ICPPField[] fields = classType.getDeclaredFields();
+							for (ICPPField f : fields) {
+								if (f.getVisibility() == ICPPField.v_protected) {
+									reportProblem(PROTECTED_FIELDS, f, element,
+											ASTStringUtil.getSimpleName(clazz.getName()));
+									break;
+								}
+							}
 							boolean isAbstract = false;
 							boolean hasAccessibleCopyCtor = false;
 							boolean hasAccessibleAssignOp = false;
@@ -114,11 +130,7 @@ public class MemberClassesChecker extends AbstractIndexAstChecker {
 									reportProblem(CTOR_DTOR_INLINE, m, element,
 											ASTStringUtil.getSimpleName(clazz.getName()));
 								}
-								boolean isVirtual = ClassTypeHelper.isVirtual(m);
-								if (!m.isVirtual() && isVirtual)
-									reportProblem(IMPLICIT_VIRTUAL, m, element, m.getName());
-								if (isVirtual && m.isInline() && !m.isFinal() && !SemanticUtils.isTemplate(classType))
-									reportProblem(VIRTUAL_INLINE, m, element, m.getName());
+								checkOverriddenMethodInBaseClass(element, classType, m);
 								if (illOverloads.contains(m.getName()))
 									reportProblem(AVOID_OVERLOADS, m, element, m.getName());
 								if (m.isPureVirtual())
@@ -169,7 +181,55 @@ public class MemberClassesChecker extends AbstractIndexAstChecker {
 			} catch (InterruptedException | CoreException e) {
 				ArtemisCoreActivator.log(e);
 			}
+			cachedAllInheritedMethods = null;
 			return PROCESS_CONTINUE;
+		}
+
+		private void checkOverriddenMethodInBaseClass(IASTDeclSpecifier element, ICPPClassType aClass,
+				ICPPMethod testedMethod) throws InterruptedException, CoreException {
+
+			if (testedMethod.isOverride() && testedMethod.isVirtual() && !testedMethod.isInline())
+				return;
+
+			if (aClass.getBases().length > 0) {
+				final String testedMethodName = testedMethod.getName();
+
+				ICPPMethod[] allInheritedMethods;
+				if (cachedAllInheritedMethods != null) {
+					allInheritedMethods = cachedAllInheritedMethods;
+				} else {
+					ICPPMethod[] inheritedMethods = null;
+					ICPPClassType[] bases = ClassTypeHelper.getAllBases(aClass);
+					for (ICPPClassType base : bases) {
+						inheritedMethods = ArrayUtil.addAll(ICPPMethod.class, inheritedMethods,
+								base.getDeclaredMethods());
+					}
+					allInheritedMethods = ArrayUtil.trim(ICPPMethod.class, inheritedMethods);
+					cachedAllInheritedMethods = allInheritedMethods;
+				}
+
+				boolean foundOverridden = false;
+				for (ICPPMethod method : allInheritedMethods) {
+					if (method.getName().equals(testedMethodName)) {
+						if (method.isVirtual()) {
+							if (ClassTypeHelper.isOverrider(testedMethod, method)) {
+								foundOverridden = true;
+							}
+						}
+					}
+				}
+				if (foundOverridden && !testedMethod.isOverride())
+					reportProblem(VIRTUAL_NO_OVERRIDE, testedMethod, element, testedMethod.getName());
+				if (foundOverridden && !testedMethod.isVirtual())
+					reportProblem(IMPLICIT_VIRTUAL, testedMethod, element, testedMethod.getName());
+				if ((foundOverridden || testedMethod.isVirtual()) && testedMethod.isInline() && !testedMethod.isFinal()
+						&& !SemanticUtils.isTemplate(aClass))
+					reportProblem(VIRTUAL_INLINE, testedMethod, element, testedMethod.getName());
+			} else {
+				if (testedMethod.isVirtual() && testedMethod.isInline() && !testedMethod.isFinal()
+						&& !SemanticUtils.isTemplate(aClass))
+					reportProblem(VIRTUAL_INLINE, testedMethod, element, testedMethod.getName());
+			}
 		}
 	}
 }

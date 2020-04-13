@@ -89,6 +89,8 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Avoid unions
 * Avoid virtual base classes
 * Avoid exception specification using 'throw' keyword
+* Avoid protected fields
+* Use always 'override' keyword where applicable 
 
 ## Configuration
 
