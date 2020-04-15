@@ -43,6 +43,10 @@
              class="com.baldapps.artemis.quickfix.QuickFixAddOverride"
              problemId="com.baldapps.artemis.checkers.VirtualNoOverrideProblem">
        </resolution>
+       <resolution
+             class="com.baldapps.artemis.quickfix.QuickFixAddElse"
+             problemId="com.baldapps.artemis.checkers.IfElseIfProblem">
+       </resolution>
    </extension>
    <extension
          point="org.eclipse.cdt.codan.core.checkers">
@@ -842,6 +846,21 @@
                markerType="org.eclipse.cdt.codan.core.codanProblem"
                messagePattern="%problem.messagePattern.IncludeBlacklistProblem"
                name="%problem.name.IncludeBlacklistProblem">
+         </problem>
+      </checker>
+      <checker
+            class="com.baldapps.artemis.checkers.IfElseIfChecker"
+            id="com.baldapps.artemis.checkers.IfElseIfChecker"
+            name="%checker.name.IfElseIfChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.IfElseIfProblem"
+               id="com.baldapps.artemis.checkers.IfElseIfProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.IfElseIfProblem"
+               name="%problem.name.IfElseIfProblem">
          </problem>
       </checker>      
    </extension>

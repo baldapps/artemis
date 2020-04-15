@@ -82,7 +82,7 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Returning no const class field from const method
 * Declared class fields but without any constructor
 * Use explicit keyword where possible
-* Use lowercase for literals
+* Use uppercase for literals
 * Avoid the use of 'continue' keyword
 * Loops should not have more than one "break" or "goto" statement
 * A const cast shall not remove const or volatile
@@ -92,7 +92,8 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Avoid protected fields
 * Use always 'override' keyword where applicable
 * Use always 'noexcept' keyword for move constructor and move assignment operator
-* Avoid to include specific header files 
+* Avoid to include specific header files
+* An if-else-if sequence must always have a final else clause
 
 ## Configuration
 
