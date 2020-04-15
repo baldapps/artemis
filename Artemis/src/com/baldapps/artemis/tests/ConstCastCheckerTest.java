@@ -48,6 +48,28 @@ public class ConstCastCheckerTest extends ArtemisCheckerTestCase {
 		checkErrorLine(3, ERR_ID);
 	}
 
+	//typedef int Int;
+	//typedef const int CInt;
+	//void foo() {
+	//	CInt a = 5;
+	//	int b = const_cast<Int>(a);
+	//}
+	public void testRemoveConstTypedef() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(5, ERR_ID);
+	}
+
+	//typedef volatile int VInt;
+	//typedef int CInt;
+	//void foo() {
+	//	VInt a = 5;
+	//	int b = const_cast<CInt>(a);
+	//}
+	public void testRemoveVolatileTypedef() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(5, ERR_ID);
+	}
+
 	//void foo() {
 	//	int a = 5;
 	//	const int b = const_cast<const int>(a);
