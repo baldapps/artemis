@@ -877,6 +877,21 @@
                messagePattern="%problem.messagePattern.IdentifierProblem"
                name="%problem.name.IdentifierProblem">
          </problem>
+      </checker>
+      <checker
+            class="com.baldapps.artemis.checkers.NullStatementsChecker"
+            id="com.baldapps.artemis.checkers.NullStatementsChecker"
+            name="%checker.name.NullStatementsChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.NullStatementsProblem"
+               id="com.baldapps.artemis.checkers.NullStatementsProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.NullStatementsProblem"
+               name="%problem.name.NullStatementsProblem">
+         </problem>
       </checker>      
    </extension>
 </plugin>
