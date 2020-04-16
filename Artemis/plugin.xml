@@ -892,6 +892,21 @@
                messagePattern="%problem.messagePattern.NullStatementsProblem"
                name="%problem.name.NullStatementsProblem">
          </problem>
+      </checker>
+      <checker
+            class="com.baldapps.artemis.checkers.EnumChecker"
+            id="com.baldapps.artemis.checkers.EnumChecker"
+            name="%checker.name.EnumChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.EnumInitProblem"
+               id="com.baldapps.artemis.checkers.EnumInitProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.EnumInitProblem"
+               name="%problem.name.EnumInitProblem">
+         </problem>
       </checker>      
    </extension>
 </plugin>

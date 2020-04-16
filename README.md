@@ -96,6 +96,7 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * An if-else-if sequence must always have a final else clause
 * Identifiers names should be shorter than 31 characters
 * Empty statements must be avoided
+* Enum members other than the first one should not be explicitly initialized unless all members are explicitly initialized
 
 ## Configuration
 
