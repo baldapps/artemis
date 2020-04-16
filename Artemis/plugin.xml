@@ -862,6 +862,21 @@
                messagePattern="%problem.messagePattern.IfElseIfProblem"
                name="%problem.name.IfElseIfProblem">
          </problem>
+      </checker>
+      <checker
+            class="com.baldapps.artemis.checkers.IdentifierChecker"
+            id="com.baldapps.artemis.checkers.IdentifierChecker"
+            name="%checker.name.IdentifierChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.IdentifierProblem"
+               id="com.baldapps.artemis.checkers.IdentifierProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.IdentifierProblem"
+               name="%problem.name.IdentifierProblem">
+         </problem>
       </checker>      
    </extension>
 </plugin>

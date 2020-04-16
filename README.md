@@ -94,6 +94,7 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Use always 'noexcept' keyword for move constructor and move assignment operator
 * Avoid to include specific header files
 * An if-else-if sequence must always have a final else clause
+* Identifiers names should be shorter than 31 characters
 
 ## Configuration
 
