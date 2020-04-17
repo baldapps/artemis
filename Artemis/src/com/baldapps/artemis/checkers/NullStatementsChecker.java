@@ -14,7 +14,6 @@ import org.eclipse.cdt.codan.core.cxx.model.AbstractIndexAstChecker;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
-import org.eclipse.cdt.core.dom.ast.IASTIfStatement;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNodeSelector;
 import org.eclipse.cdt.core.dom.ast.IASTNullStatement;
@@ -38,8 +37,6 @@ public class NullStatementsChecker extends AbstractIndexAstChecker {
 					return PROCESS_CONTINUE;
 				if (statement instanceof IASTNullStatement) {
 					IASTNode parent = statement.getParent();
-					if (parent instanceof IASTIfStatement)
-						return PROCESS_CONTINUE;
 					if (parent instanceof IASTForStatement) {
 						if (((IASTForStatement) parent).getInitializerStatement() == statement) {
 							return PROCESS_CONTINUE;

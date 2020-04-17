@@ -65,4 +65,14 @@ public class NullStatementsCheckerTest extends ArtemisCheckerTestCase {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(ERR_ID);
 	}
+
+	//void foo() {
+	//	int a = 6;
+	//	if (; a < 5)
+	//		a++;
+	//}
+	public void testEmptyIfCpp17() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(3, ERR_ID);
+	}
 }
