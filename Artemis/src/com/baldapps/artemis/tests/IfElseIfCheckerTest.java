@@ -90,4 +90,72 @@ public class IfElseIfCheckerTest extends ArtemisCheckerTestCase {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(ERR_ID);
 	}
+
+	//void foo() {
+	//	int a = 0;
+	//	if (a == 0)
+	//		a++;
+	//}
+	public void testIfWithoutBraces() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_ID);
+	}
+
+	//void foo() {
+	//	int a = 0;
+	//	if (a == 0)
+	//		if (a == 0)
+	//			a++;
+	//}
+	public void testNestedIfWithoutBraces() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_ID);
+	}
+
+	//void foo() {
+	//	int a = 0;
+	//	if (a == 0) {
+	//		if (a == 0)
+	//			a++;
+	//	}
+	//}
+	public void testNestedIfWithBraces() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_ID);
+	}
+
+	//void foo() {
+	//	if ( true ) {
+	//	} else if ( true ) {
+	//  	  if ( true ) {
+	//      	  if ( true ) {
+	//        	  }
+	//    	  }
+	//	} else {
+	//	}
+	//	if ( false ) {
+	//	}
+	//}
+	public void testNestedIfs() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_ID);
+	}
+
+	//void foo() {
+	//	if ( true ) {
+	//	} else if ( true ) {
+	//  	  if ( true ) {
+	//      	  if ( true ) {
+	//        	  } else if (true) {
+	//			  }
+	//    	  }
+	//	}
+	//	if ( false ) {
+	//	}
+	//}
+	public void testNestedIfs2() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(3, ERR_ID);
+		checkErrorLine(6, ERR_ID);
+	}
 }

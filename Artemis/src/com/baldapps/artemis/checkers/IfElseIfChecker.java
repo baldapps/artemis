@@ -30,7 +30,7 @@ public class IfElseIfChecker extends AbstractIndexAstChecker {
 
 	@Override
 	public void processAst(IASTTranslationUnit ast) {
-		ast.accept(new IfElseIfVisitor());
+		ast.accept(new MainVisitor());
 	}
 
 	private static class Context {
@@ -38,24 +38,46 @@ public class IfElseIfChecker extends AbstractIndexAstChecker {
 		public IASTNode faultyIf;
 	}
 
-	class IfElseIfVisitor extends ASTVisitor {
+	class MainVisitor extends ASTVisitor {
 
-		private final Stack<Context> ifStack = new Stack<>();
-
-		IfElseIfVisitor() {
+		MainVisitor() {
 			shouldVisitStatements = true;
 		}
 
 		@Override
 		public int visit(IASTStatement statement) {
+			if (statement instanceof IASTIfStatement
+					&& ((IASTIfStatement) statement).getPropertyInParent() != IASTIfStatement.ELSE) {
+				IASTStatement elseClause = ((IASTIfStatement) statement).getElseClause();
+				if (elseClause != null && elseClause instanceof IASTIfStatement)
+					statement.accept(new IfElseIfVisitor((IASTIfStatement) statement));
+			}
+			return PROCESS_CONTINUE;
+		}
+	}
+
+	class IfElseIfVisitor extends ASTVisitor {
+
+		private final Stack<Context> ifStack = new Stack<>();
+		private IASTIfStatement root;
+
+		IfElseIfVisitor(IASTIfStatement r) {
+			shouldVisitStatements = true;
+			root = r;
+		}
+
+		@Override
+		public int visit(IASTStatement statement) {
 			if (statement instanceof IASTIfStatement) {
+				if (statement.getParent() != root && statement != root)
+					return PROCESS_CONTINUE;
 				IASTStatement elseClause = ((IASTIfStatement) statement).getElseClause();
 				if (elseClause == null && !ifStack.isEmpty()) {
 					ifStack.peek().faultyIf = statement;
 					return PROCESS_SKIP;
 				}
-				Context c = new Context();
-				ifStack.push(c);
+				Context c1 = new Context();
+				ifStack.push(c1);
 			} else if (!ifStack.empty()) {
 				Context c = ifStack.peek();
 				if (!c.exitFound)
@@ -67,6 +89,8 @@ public class IfElseIfChecker extends AbstractIndexAstChecker {
 		@Override
 		public int leave(IASTStatement statement) {
 			if (statement instanceof IASTIfStatement && !ifStack.empty()) {
+				if (statement.getParent() != root && statement != root)
+					return PROCESS_CONTINUE;
 				Context c = ifStack.pop();
 				if (!ifStack.isEmpty()) {
 					ifStack.peek().exitFound |= c.exitFound;
