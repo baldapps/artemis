@@ -45,6 +45,7 @@ public class ConstCastChecker extends AbstractIndexAstChecker {
 					IASTExpression op = constCast.getOperand();
 					IType type = op.getExpressionType();
 					IASTDeclSpecifier spec = typeId.getDeclSpecifier();
+					type = SemanticUtil.getNestedType(type, SemanticUtil.TDEF | SemanticUtil.REF | SemanticUtil.PTR);
 					if (!spec.isConst() && SemanticUtil.isConst(type)) {
 						reportProblem(ERR_ID, exp);
 					} else if (!spec.isVolatile() && SemanticUtil.isVolatile(type)) {

@@ -87,4 +87,27 @@ public class ConstCastCheckerTest extends ArtemisCheckerTestCase {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(ERR_ID);
 	}
+
+	//class Foo {
+	//public:
+	//	Foo* test() const {
+	//		return const_cast<Foo*>(this);
+	//	}
+	//};
+	public void testThisPtr() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(4, ERR_ID);
+	}
+
+	//class Foo {
+	//public:
+	//	Foo& test() const {
+	//		const Foo& ref = *this;
+	//		return const_cast<Foo&>(ref);
+	//	}
+	//};
+	public void testThisRef() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(5, ERR_ID);
+	}
 }
