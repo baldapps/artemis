@@ -22,4 +22,5 @@
    <feature url="features/ArtemisFeature_2.4.0.qualifier.jar" id="ArtemisFeature" version="2.4.0.qualifier"/>
    <feature url="features/ArtemisFeature_2.5.0.qualifier.jar" id="ArtemisFeature" version="2.5.0.qualifier"/>
    <feature url="features/ArtemisFeature_2.6.0.qualifier.jar" id="ArtemisFeature" version="2.6.0.qualifier"/>
+   <feature url="features/ArtemisFeature_2.6.1.qualifier.jar" id="ArtemisFeature" version="2.6.1.qualifier"/>
 </site>
