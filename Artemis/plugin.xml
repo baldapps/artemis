@@ -47,6 +47,10 @@
              class="com.baldapps.artemis.quickfix.QuickFixAddElse"
              problemId="com.baldapps.artemis.checkers.IfElseIfProblem">
        </resolution>
+       <resolution
+             class="com.baldapps.artemis.quickfix.QuickFixPreOperator"
+             problemId="com.baldapps.artemis.checkers.PostOperatorProblem">
+       </resolution>
    </extension>
    <extension
          point="org.eclipse.cdt.codan.core.checkers">
@@ -907,6 +911,21 @@
                messagePattern="%problem.messagePattern.EnumInitProblem"
                name="%problem.name.EnumInitProblem">
          </problem>
-      </checker>      
+      </checker>
+      <checker
+            class="com.baldapps.artemis.checkers.PostOperatorChecker"
+            id="com.baldapps.artemis.checkers.PostOperatorChecker"
+            name="%checker.name.PostOperatorChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.CodeStyle"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.PostOperatorProblem"
+               id="com.baldapps.artemis.checkers.PostOperatorProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.PostOperatorProblem"
+               name="%problem.name.PostOperatorProblem">
+         </problem>
+      </checker>
    </extension>
 </plugin>
