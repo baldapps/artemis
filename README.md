@@ -97,6 +97,8 @@ Here a list of all additional checks perfomed by Artemis in real-time.
 * Identifiers names should be shorter than 31 characters
 * Empty statements must be avoided
 * Enum members other than the first one should not be explicitly initialized unless all members are explicitly initialized
+* Avoid post-incr and post-dec operators to improve performance
+* Template constructor with one parameter and one template parameter with universal reference can take higher priority than move constructor and copy constructor
 
 ## Configuration
 
