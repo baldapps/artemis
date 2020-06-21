@@ -927,5 +927,20 @@
                name="%problem.name.PostOperatorProblem">
          </problem>
       </checker>
+      <checker
+            class="com.baldapps.artemis.checkers.CtorTemplateChecker"
+            id="com.baldapps.artemis.checkers.CtorTemplateChecker"
+            name="%checker.name.CtorTemplateChecker">
+         <problem
+               category="org.eclipse.cdt.codan.core.categories.ProgrammingProblems"
+               defaultEnabled="false"
+               defaultSeverity="Warning"
+               description="%problem.description.CtorTemplateProblem"
+               id="com.baldapps.artemis.checkers.CtorTemplateProblem"
+               markerType="org.eclipse.cdt.codan.core.codanProblem"
+               messagePattern="%problem.messagePattern.CtorTemplateProblem"
+               name="%problem.name.CtorTemplateProblem">
+         </problem>
+      </checker>
    </extension>
 </plugin>
