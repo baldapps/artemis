@@ -69,7 +69,7 @@ public class IfElseIfChecker extends AbstractIndexAstChecker {
 		@Override
 		public int visit(IASTStatement statement) {
 			if (statement instanceof IASTIfStatement) {
-				if (statement.getParent() != root && statement != root)
+				if (!isChild((IASTIfStatement) statement, root) && statement != root)
 					return PROCESS_CONTINUE;
 				IASTStatement elseClause = ((IASTIfStatement) statement).getElseClause();
 				if (elseClause == null && !ifStack.isEmpty()) {
@@ -89,7 +89,7 @@ public class IfElseIfChecker extends AbstractIndexAstChecker {
 		@Override
 		public int leave(IASTStatement statement) {
 			if (statement instanceof IASTIfStatement && !ifStack.empty()) {
-				if (statement.getParent() != root && statement != root)
+				if (!isChild((IASTIfStatement) statement, root) && statement != root)
 					return PROCESS_CONTINUE;
 				Context c = ifStack.pop();
 				if (!ifStack.isEmpty()) {
@@ -101,6 +101,22 @@ public class IfElseIfChecker extends AbstractIndexAstChecker {
 			}
 			return PROCESS_CONTINUE;
 		}
+	}
+
+	private boolean isChild(IASTIfStatement statement, IASTNode root) {
+		if (statement == null)
+			return false;
+		if (statement.getPropertyInParent() != IASTIfStatement.ELSE) {
+			return false;
+		}
+		IASTNode parent = statement.getParent();
+		while (parent != null) {
+			if (parent instanceof IASTIfStatement && parent == root) {
+				return true;
+			}
+			parent = parent.getParent();
+		}
+		return false;
 	}
 
 	private boolean isBreakOrExitStatement(IASTStatement statement) {
