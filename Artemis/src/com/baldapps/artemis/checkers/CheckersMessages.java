@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Marco Stornelli
+ * Copyright (c) 2020 Marco Stornelli
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -27,6 +27,8 @@ public class CheckersMessages extends NLS {
 	public static String NamingConventionClassesChecker_NamespaceLabelNamePattern;
 	public static String IncludeBlacklistChecker_list;
 	public static String IncludeBlacklistChecker_list_item;
+	public static String FunctionChecker_list;
+	public static String FunctionChecker_list_item;
 
 	static {
 		NLS.initializeMessages(CheckersMessages.class.getName(), CheckersMessages.class);

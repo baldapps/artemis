@@ -112,4 +112,17 @@ public class FunctionCheckerTest extends ArtemisCheckerTestCase {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(ERR_ID);
 	}
+
+	//namespace Bar {
+	//struct Foo {
+	//};
+	//}
+	//void test2(Bar::Foo f) {
+	//}
+	public void testWhitelist() throws Exception {
+		setPreferenceValue(FunctionChecker.PAR_BY_COPY_ID, FunctionChecker.PARAM_WHITELIST,
+				new String[] { "Bar::Foo" });
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_ID);
+	}
 }
