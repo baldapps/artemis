@@ -91,4 +91,28 @@ public class ForLoopCheckerTest extends ArtemisCheckerTestCase {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(CNT_MODIFICATION_ID);
 	}
+
+	//void foo() {
+	//	int array1[4];
+	//	int array2[4];
+	//	for (int f = 0; f < 4; f++) {
+	//		array1[f] = array2[f];
+	//	}
+	//}
+	public void testCounterMod5() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(CNT_MODIFICATION_ID);
+	}
+
+	//void foo() {
+	//	int array1[4];
+	//	int array2[4];
+	//	for (int f = 0; f < 4; f++) {
+	//		array1[f++] = 8; 
+	//	}
+	//}
+	public void testCounterMod6() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(5);
+	}
 }

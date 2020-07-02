@@ -14,9 +14,12 @@ import java.util.Optional;
 
 import org.eclipse.cdt.codan.core.cxx.model.AbstractIndexAstChecker;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.IASTArraySubscriptExpression;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTForStatement;
+import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTStatement;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBasicType;
@@ -43,13 +46,30 @@ public class ForLoopChecker extends AbstractIndexAstChecker {
 			binding = b;
 		}
 
+		public boolean isArrayIndex(IASTName name) {
+			if (name == null)
+				return false;
+			IASTNode n = name.getParent();
+			if (n instanceof IASTIdExpression && n.getParent() instanceof IASTArraySubscriptExpression) {
+				return true;
+			}
+			return false;
+		}
+
 		@Override
 		public int visit(IASTName name) {
 			IBinding currentBinding = name.resolveBinding();
 			if (currentBinding != null && !(currentBinding instanceof IProblemBinding) && IndexUtils
 					.areEquivalentBindings(currentBinding, binding, name.getTranslationUnit().getIndex())) {
 				Optional<Integer> flags = VariableFlags.getFlags(name);
-				if (flags.isPresent() && (flags.get() & PDOMName.WRITE_ACCESS) != 0) {
+				//if (ASTQueries.findAncestorWithType(name, IASTArraySubscriptExpression.class) != null) {
+				if (isArrayIndex(name)) {
+					if (flags.isPresent() && (flags.get() & PDOMName.WRITE_ACCESS) != 0 && flags.isPresent()
+							&& (flags.get() & PDOMName.READ_ACCESS) == 0) {
+						reportProblem(CNT_MODIFICATION_ID, name, ASTStringUtil.getSimpleName(name));
+						return PROCESS_ABORT;
+					}
+				} else if (flags.isPresent() && (flags.get() & PDOMName.WRITE_ACCESS) != 0) {
 					reportProblem(CNT_MODIFICATION_ID, name, ASTStringUtil.getSimpleName(name));
 					return PROCESS_ABORT;
 				}
