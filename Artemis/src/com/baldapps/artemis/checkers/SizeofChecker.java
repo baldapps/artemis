@@ -82,7 +82,7 @@ public class SizeofChecker extends AbstractIndexAstChecker {
 			}
 
 			private boolean isVoid(IType type) {
-				type = SemanticUtil.getUltimateType(type, true);
+				type = SemanticUtil.getNestedType(type, SemanticUtil.TDEF | SemanticUtil.ALLCVQ);
 				if (!(type instanceof IBasicType)) {
 					return false;
 				}

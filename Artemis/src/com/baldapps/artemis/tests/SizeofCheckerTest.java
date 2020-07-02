@@ -62,7 +62,7 @@ public class SizeofCheckerTest extends ArtemisCheckerTestCase {
 	//}
 	public void testSizeofVoidPtr() throws Exception {
 		loadCodeAndRun(getAboveComment());
-		checkErrorLine(2, SIZEOF_VOID_ID);
+		checkNoErrorsOfKind(SIZEOF_VOID_ID);
 	}
 
 	//int foo() {
