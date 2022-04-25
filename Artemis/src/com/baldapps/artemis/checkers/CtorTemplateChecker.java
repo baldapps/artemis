@@ -25,7 +25,10 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPConstructor;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPFunctionTemplate;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPParameter;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPReferenceType;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPTemplateParameter;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPTemplateTypeParameter;
 import org.eclipse.cdt.core.dom.ast.cpp.SemanticQueries;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.semantics.SemanticUtil;
@@ -71,6 +74,15 @@ public class CtorTemplateChecker extends AbstractIndexAstChecker {
 			shouldVisitDeclSpecifiers = true;
 		}
 
+		private boolean isOneParameter(ICPPFunctionTemplate m) {
+			return m.getParameters().length == 1 && ((ICPPFunctionTemplate) m).getTemplateParameters().length == 1;
+		}
+
+		private boolean isTwoParameter(ICPPFunctionTemplate m) {
+			ICPPTemplateParameter[] parameters = ((ICPPFunctionTemplate) m).getTemplateParameters();
+			return parameters.length == 2 && parameters[1].isParameterPack();
+		}
+
 		@Override
 		public int visit(IASTDeclSpecifier element) {
 			try {
@@ -83,20 +95,28 @@ public class CtorTemplateChecker extends AbstractIndexAstChecker {
 							ICPPConstructor[] ctors = classType.getConstructors();
 							for (ICPPConstructor m : ctors) {
 								if (m instanceof ICPPFunctionTemplate && !m.isImplicit()
-										&& m.getParameters().length == 1 && !SemanticQueries.isCopyOrMoveConstructor(m)
-										&& ((ICPPFunctionTemplate) m).getTemplateParameters().length == 1) {
-									IType t = m.getParameters()[0].getType();
+										&& (isOneParameter((ICPPFunctionTemplate) m)
+												|| isTwoParameter((ICPPFunctionTemplate) m))
+										&& !SemanticQueries.isCopyOrMoveConstructor(m)) {
+									ICPPParameter[] parameters = m.getParameters();
+									IType t = parameters[0].getType();
 									IType refType = SemanticUtil.getNestedType(t, SemanticUtil.TDEF);
 									if (refType instanceof ICPPReferenceType
 											&& ((ICPPReferenceType) refType).isRValueReference()) {
-										reportProblem(CTOR_TEMPLATE_ID, m, element);
+										IType base = SemanticUtil.getNestedType(t, SemanticUtil.REF);
+										if (base instanceof ICPPTemplateTypeParameter && (parameters.length == 1
+												|| (parameters.length == 2 && parameters[1].isParameterPack()))) {
+											reportProblem(CTOR_TEMPLATE_ID, m, element);
+										}
 									}
 								}
 							}
 						}
 					}
 				}
-			} catch (InterruptedException | CoreException e) {
+			} catch (InterruptedException |
+
+					CoreException e) {
 				ArtemisCoreActivator.log(e);
 			}
 			return PROCESS_CONTINUE;

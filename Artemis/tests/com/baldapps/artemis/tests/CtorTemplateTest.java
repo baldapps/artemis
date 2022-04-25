@@ -66,6 +66,26 @@ public class CtorTemplateTest extends ArtemisCheckerTestCase {
 
 	//class A {
 	//public:
+	//	template<class T, class ... Args>
+	//	A(T&& t, Args&& ... args) {}
+	//};
+	public void testCtorTemplateRValueVariadic() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(1, ERR_ID);
+	}
+
+	//class A {
+	//public:
+	//	template<class T, class ... Args>
+	//	A(T&& t, Args&& args) {}
+	//};
+	public void testCtorTemplateRValueNoVariadic() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrors();
+	}
+
+	//class A {
+	//public:
 	//	template<class T>
 	//	A(T& t) {}
 	//};
