@@ -73,4 +73,16 @@ public class CtorTemplateTest extends ArtemisCheckerTestCase {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrors();
 	}
+	
+	//template<class U>
+	//class foo {};
+	//class A {
+	//public:
+	//	template<class T>
+	//	A(foo<T>&& t) {}
+	//};
+	public void testCtorTemplateRValueWithTemplate() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrors();
+	}
 }

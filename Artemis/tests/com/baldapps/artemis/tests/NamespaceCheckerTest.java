@@ -38,6 +38,14 @@ public class NamespaceCheckerTest extends ArtemisCheckerTestCase {
 		checkErrorLine(1, ERR_ID);
 	}
 
+	//namespace std {
+	//	class a {};
+	//}
+	public void testAddClassToStd() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(1, ERR_ID);
+	}
+
 	//using namespace std;
 	//namespace custom {
 	//	int a;
@@ -67,5 +75,38 @@ public class NamespaceCheckerTest extends ArtemisCheckerTestCase {
 	public void testTemplateSpec() throws Exception {
 		loadCodeAndRun(getAboveComment());
 		checkNoErrorsOfKind(ERR_ID);
+	}
+
+	//template<class T>
+	//class Myclass;
+	//namespace std {
+	//	template<class T>
+	//	struct hash<Myclass<T>> {};
+	//}
+	public void testPartialSpecialization() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkNoErrorsOfKind(ERR_ID);
+	}
+	
+	//namespace std {
+	//	template<class T>
+	//	struct foo {};
+	//}
+	public void testTemplateDeclaration() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(1, ERR_ID);
+	}
+	
+	//template<class T>
+	//class Myclass;
+	//namespace std {
+	//	template<class T>
+	//	Myclass<T> max(const Myclass<T>& a, const Myclass<T>& b) {
+	//		return a;
+	//	}
+	//}
+	public void testPartialSpecializationFunction() throws Exception {
+		loadCodeAndRun(getAboveComment());
+		checkErrorLine(3, ERR_ID);
 	}
 }

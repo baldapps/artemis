@@ -16,10 +16,17 @@ import org.eclipse.cdt.codan.core.cxx.model.AbstractIndexAstChecker;
 import org.eclipse.cdt.codan.core.model.IProblem;
 import org.eclipse.cdt.codan.core.model.IProblemWorkingCopy;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
+import org.eclipse.cdt.core.dom.ast.IASTDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTName;
+import org.eclipse.cdt.core.dom.ast.IASTProblemDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTName;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamespaceDefinition;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateDeclaration;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateId;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateSpecialization;
 import org.eclipse.cdt.core.parser.util.CharArrayUtils;
 
@@ -58,7 +65,28 @@ public class NamespaceChecker extends AbstractIndexAstChecker {
 						return PROCESS_CONTINUE;
 					}
 					for (IASTDeclaration d : decls) {
-						if (!(d instanceof ICPPASTTemplateSpecialization)) {
+						if (d instanceof ICPPASTTemplateSpecialization || d instanceof IASTProblemDeclaration) {
+							return PROCESS_CONTINUE;
+						}
+						if (d instanceof ICPPASTTemplateDeclaration) {
+							IASTDeclaration decl = ((ICPPASTTemplateDeclaration) d).getDeclaration();
+							if (decl instanceof IASTSimpleDeclaration) {
+								IASTDeclSpecifier declSpec = ((IASTSimpleDeclaration) decl).getDeclSpecifier();
+								if (declSpec instanceof ICPPASTCompositeTypeSpecifier) {
+									IASTName n = ((ICPPASTCompositeTypeSpecifier) declSpec).getName();
+									if (!(n instanceof ICPPASTTemplateId)) {
+										reportProblem(STD_NAMESPACE_ID, declaration);
+										return PROCESS_CONTINUE;
+									}
+								} else {
+									reportProblem(STD_NAMESPACE_ID, declaration);
+									return PROCESS_CONTINUE;
+								}
+							} else {
+								reportProblem(STD_NAMESPACE_ID, declaration);
+								return PROCESS_CONTINUE;
+							}
+						} else {
 							reportProblem(STD_NAMESPACE_ID, declaration);
 							return PROCESS_CONTINUE;
 						}

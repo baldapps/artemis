@@ -22,7 +22,7 @@ public class ArtemisCheckerTestCase extends CheckerTestCase {
 	@Override
 	protected StringBuilder[] getContents(int sections) {
 		try {
-			return TestSourceReader.getContentsForTest(ArtemisCoreActivator.getDefault().getBundle(), getSourcePrefix(),
+			return TestSourceReader.getContentsForTest(ArtemisCoreActivator.getDefault().getBundle(), "tests",
 					getClass(), getName(), sections);
 		} catch (IOException e) {
 			fail(e.getMessage());
