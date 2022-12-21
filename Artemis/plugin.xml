@@ -685,7 +685,7 @@
       <checker
             class="com.baldapps.artemis.checkers.FunctionChecker"
             id="com.baldapps.artemis.checkers.FunctionChecker"
-            name="%checker.name.StructsChecker">
+            name="%checker.name.FunctionChecker">
          <problem
                category="org.eclipse.cdt.codan.core.categories.CodeStyle"
                defaultEnabled="false"
